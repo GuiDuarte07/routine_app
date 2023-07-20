@@ -53,7 +53,14 @@
     "id": 8,
     "title": "Ler livro",
     "day": "wed",
-    "startHour": "16:00",
-    "endHour": "20:30"
+    "startHour": "18:00",
+    "endHour": "23:30"
+  },
+  {
+    "id": 8,
+    "title": "Ler livro",
+    "day": "thurs",
+    "startHour": "00:30",
+    "endHour": "23:30"
   }
 ]

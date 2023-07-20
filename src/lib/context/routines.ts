@@ -1,7 +1,7 @@
 import example from "@/utils/example.json"
 import { create } from 'zustand'
 
-interface Event {
+export interface Event {
   id: number;
   title: string;
   day: string;

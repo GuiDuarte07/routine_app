@@ -1,58 +1,63 @@
 
-type ObjectOfSubdividedHours = {
-  subdividedHours: number[];
-  firtHour: number;
-  lastHour: number;
-}
+import { Event } from "@/lib/context/routines"
+
 //Format of startHour and endHour = 14:30
-export function objectOfSubdividedHours(hourArrays: {startHour: string, endHour: string}[]): ObjectOfSubdividedHours {
+export function eventToHourArray(hourArrays: {startHour: string, endHour: string}[]): number[] {
   const subdividedHours: number[] = []
-  let firtHour: number = Infinity
-  let lastHour: number = -Infinity
-  let haveMidnight: boolean = false
+  let firtHour: number = 24
+  let lastHour: number = 1
 
   hourArrays.forEach(({startHour, endHour}) => {
-    const [startH, startMin] = startHour.split(":")
-    const [endH, endMin] = endHour.split(":")
+    const [startH, startMin] = startHour.split(":").map(value => Number(value))
+    const [endH, endMin] = endHour.split(":").map(value => Number(value))
 
-    if (startH === "00" || endH === "00") {
-      haveMidnight = true
-    }
+    if (firtHour > startH) firtHour = startH
+    if (lastHour < endH) lastHour = endH
 
-    if (firtHour === undefined) {
-      firtHour = Number(startH)
-    } else if (firtHour > Number(startH)) {
-      firtHour = Number(startH)
-    }
-
-    if (lastHour === undefined) {
-      lastHour = Number(endH)
-    } else if (lastHour < Number(endH)) {
-      lastHour = Number(endH)
-    }
-
-    if (startMin === "30") {
-      if (!subdividedHours.find(hour => hour === Number(startH))) {
-        subdividedHours.push(Number(startH))
+    if (startMin === 30) {
+      if (!subdividedHours.find(hour => hour === startH)) {
+        subdividedHours.push(startH)
       }
     }
-    if (endMin === "30") {
-      if (!subdividedHours.find(hour => hour === Number(endH))) {
-        subdividedHours.push(Number(endH))
+    if (endMin === 30) {
+      if (!subdividedHours.find(hour => hour === endH)) {
+        subdividedHours.push(endH)
       }
     }
   })
 
-  lastHour += 1
+  const defaultHours: number[] = []
 
-  if (haveMidnight || lastHour === 24) {
-    lastHour = 0
+  for (let i = firtHour; i < lastHour; i++) {
+   defaultHours.push(i) 
   }
 
-  subdividedHours.sort((a, b) => a - b)
+  const allArray = [...subdividedHours, ...defaultHours]
+  allArray.sort((a, b) => a - b)
 
-  return {subdividedHours, firtHour, lastHour}
+  if (allArray[allArray.length-1] === lastHour) allArray.push(lastHour)
+
+  return allArray
 }
 
-import example from "@/utils/example.json"
-console.log(objectOfSubdividedHours(example.map(event => ({endHour: event.endHour, startHour: event.startHour}))))
+//retorna true se o novo evento conflita com os demais
+export function hasTimeConflict(event: Event, events: Event[]): boolean {
+  const startTimeEvent = new Date(`1970-01-01T${event.startHour}`)
+  const endTimeEvent = new Date(`1970-01-01T${event.endHour}`)
+
+  for (const otherEvent of events) {
+    if (otherEvent !== event && otherEvent.day === event.day) {
+      const startTimeOther = new Date(`1970-01-01T${otherEvent.startHour}`)
+      const endTimeOther = new Date(`1970-01-01T${otherEvent.endHour}`)
+
+      if (
+        (startTimeEvent <= endTimeOther && startTimeOther <= endTimeEvent) ||
+        (startTimeOther <= endTimeEvent && startTimeEvent <= endTimeOther)
+      ) {
+        return true
+      }
+    }
+  }
+
+  return false 
+}
