@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Estudar FrontEnd",
+    "day": "mon",
+    "startHour": "07:30",
+    "endHour": "10:00"
+  },
+  {
+    "title": "Estudar FrontEnd",
+    "day": "mon",
+    "startHour": "14:00",
+    "endHour": "19:30"
+  },
+  {
+    "title": "Uninter",
+    "day": "tues",
+    "startHour": "10:30",
+    "endHour": "15:00"
+  },
+  {
+    "title": "Uninter",
+    "day": "tues",
+    "startHour": "06:30",
+    "endHour": "10:00"
+  },
+  {
+    "title": "Trabalhar",
+    "day": "fri",
+    "startHour": "16:00",
+    "endHour": "22:00"
+  },
+  {
+    "title": "Trabalhar",
+    "day": "fri",
+    "startHour": "08:00",
+    "endHour": "10:30"
+  },
+  {
+    "title": "Ler livro",
+    "day": "wed",
+    "startHour": "11:00",
+    "endHour": "14:30"
+  },
+  {
+    "title": "Ler livro",
+    "day": "wed",
+    "startHour": "16:00",
+    "endHour": "20:30"
+  }
+]
