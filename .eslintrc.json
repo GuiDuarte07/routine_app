@@ -36,6 +36,8 @@
   },
   "rules": {
     // Personalize as regras do ESLint conforme necessário
-    "semi": ["error", "never"]
+    "semi": ["error", "never"],
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-uses-react": "off"
   }
 }
