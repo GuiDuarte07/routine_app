@@ -38,6 +38,7 @@
     // Personalize as regras do ESLint conforme necessário
     "semi": ["error", "never"],
     "react/react-in-jsx-scope": "off",
-    "react/jsx-uses-react": "off"
+    "react/jsx-uses-react": "off",
+    "no-unused-vars": "off" 
   }
 }
