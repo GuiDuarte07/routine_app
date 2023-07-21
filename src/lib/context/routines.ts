@@ -11,6 +11,7 @@ export interface Event {
 
 interface RoutineStates {
   routine: Event[]
+  daysOnTable: number
 }
 
 interface RoutineActions {
@@ -20,8 +21,9 @@ interface RoutineActions {
 }
 
 
-const useStore = create<RoutineStates & RoutineActions>((set) => ({
+export const useRoutine = create<RoutineStates & RoutineActions>((set) => ({
   routine: example, // Assuming example is an initial array of events
+  daysOnTable: 5,
   addNewEvent: (event) =>
     set((state) => ({
       routine: [...state.routine, event], // Add the new event to the routine array
@@ -37,5 +39,3 @@ const useStore = create<RoutineStates & RoutineActions>((set) => ({
       ),
     })),
 }))
-
-export default useStore

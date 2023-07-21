@@ -2,10 +2,11 @@
 import { Event } from "@/lib/context/routines"
 
 //Format of startHour and endHour = 14:30
+//Retorna um array com as horas que terá a tabela (a repitição de uma hora significa que ele será dividido em meia hora + meia hora)
 export function eventToHourArray(hourArrays: {startHour: string, endHour: string}[]): number[] {
   const subdividedHours: number[] = []
   let firtHour: number = 24
-  let lastHour: number = 1
+  let lastHour: number = 0
 
   hourArrays.forEach(({startHour, endHour}) => {
     const [startH, startMin] = startHour.split(":").map(value => Number(value))

@@ -1,4 +1,6 @@
+"use client"
 import StyledComponentsRegistry from '@/lib/registry'
+import GlobalStyles from '@/style/GlobalStyle'
 import type { Metadata } from 'next'
 /* import { Inter } from 'next/font/google' */
 
@@ -16,6 +18,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <GlobalStyles/>
       <body><StyledComponentsRegistry>{children}</StyledComponentsRegistry></body>
     </html>
   )
