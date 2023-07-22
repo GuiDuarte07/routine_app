@@ -62,3 +62,22 @@ export function hasTimeConflict(event: Event, events: Event[]): boolean {
 
   return false 
 }
+
+export function filterRepeatedNumbers(array: number[]): number[] {
+  // Create a new Set to store unique numbers
+  const uniqueNumbers = new Set();
+
+  // Create a new array to store the filtered numbers
+  const filteredArray = [];
+
+  for (const number of array) {
+    // Check if the number is already in the Set
+    if (!uniqueNumbers.has(number)) {
+      // If it's not in the Set, add it to both the Set and the filteredArray
+      uniqueNumbers.add(number);
+      filteredArray.push(number);
+    }
+  }
+
+  return filteredArray;
+}
