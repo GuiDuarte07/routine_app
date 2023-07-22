@@ -63,7 +63,7 @@ export const ColHeaderData = styled.div<{height: number}>`
   font-weight: bold;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   /* border-bottom: 1px dashed black; */
   box-sizing: border-box;
   color: white

@@ -11,7 +11,7 @@
     "title": "Estudar FrontEnd",
     "day": "mon",
     "startHour": "14:00",
-    "endHour": "19:30"
+    "endHour": "19:00"
   },
   {
     "id": 3,
@@ -53,7 +53,7 @@
     "title": "Ler livro",
     "day": "wed",
     "startHour": "18:00",
-    "endHour": "19:30"
+    "endHour": "19:00"
   },
   {
     "id": 8,
@@ -61,5 +61,12 @@
     "day": "thurs",
     "startHour": "10:30",
     "endHour": "18:30"
+  },
+  {
+    "id": 8,
+    "title": "Trabalhar",
+    "day": "wed",
+    "startHour": "07:00",
+    "endHour": "07:30"
   }
 ]

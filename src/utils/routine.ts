@@ -1,44 +1,54 @@
+import { Event } from "@/lib/context/routines";
 
-import { Event } from "@/lib/context/routines"
+export function parseHourMinute(time: string): { hour: number; minute: number } {
+  const [hourStr, minuteStr] = time.split(":");
+  return { hour: parseInt(hourStr), minute: parseInt(minuteStr) };
+}
 
-//Format of startHour and endHour = 14:30
-//Retorna um array com as horas que terá a tabela (a repitição de uma hora significa que ele será dividido em meia hora + meia hora)
-export function eventToHourArray(hourArrays: {startHour: string, endHour: string}[]): number[] {
-  const subdividedHours: number[] = []
-  let firtHour: number = 24
-  let lastHour: number = 0
+function formatHourMinute(hour: number, minute: number): string {
+  const hourStr = hour.toString().padStart(2, "0");
+  const minuteStr = minute.toString().padStart(2, "0");
+  return `${hourStr}:${minuteStr}`;
+}
 
-  hourArrays.forEach(({startHour, endHour}) => {
-    const [startH, startMin] = startHour.split(":").map(value => Number(value))
-    const [endH, endMin] = endHour.split(":").map(value => Number(value))
+function compareTimes(time1: string, time2: string): number {
+  const { hour: hour1, minute: minute1 } = parseHourMinute(time1);
+  const { hour: hour2, minute: minute2 } = parseHourMinute(time2);
 
-    if (firtHour > startH) firtHour = startH
-    if (lastHour < endH) lastHour = endH
-
-    if (startMin === 30) {
-      if (!subdividedHours.find(hour => hour === startH)) {
-        subdividedHours.push(startH)
-      }
-    }
-    if (endMin === 30) {
-      if (!subdividedHours.find(hour => hour === endH)) {
-        subdividedHours.push(endH)
-      }
-    }
-  })
-
-  const defaultHours: number[] = []
-
-  for (let i = firtHour; i < lastHour; i++) {
-   defaultHours.push(i) 
+  if (hour1 === hour2) {
+    return minute1 - minute2;
   }
 
-  const allArray = [...subdividedHours, ...defaultHours]
-  allArray.sort((a, b) => a - b)
+  return hour1 - hour2;
+}
 
-  if (allArray[allArray.length-1] === lastHour) allArray.push(lastHour)
+export function generateHourArray(hoursArray: { startHour: string; endHour: string }[]): string[] {
+  if (hoursArray.length === 0) {
+    throw new Error("The array must not be empty.");
+  }
 
-  return allArray
+  const sortedHoursArray = hoursArray.slice().sort((a, b) => compareTimes(a.startHour, b.startHour));
+  const result: string[] = [];
+  const minHour = sortedHoursArray[0].startHour;
+  const maxHour = sortedHoursArray[sortedHoursArray.length - 1].endHour;
+  let currentHour = minHour;
+  let i = 0
+
+  while (result[result.length - 1] !== maxHour) {
+    i++
+    if (i > 30) return ["errorr"]
+    result.push(currentHour);
+
+    const { hour, minute } = parseHourMinute(currentHour);
+    // Increment by half an hour
+    if (minute < 30) {
+      currentHour = formatHourMinute(hour, minute + 30);
+    } else {
+      currentHour = formatHourMinute(hour + 1, 0);
+    }
+  }
+
+  return result;
 }
 
 //retorna true se o novo evento conflita com os demais

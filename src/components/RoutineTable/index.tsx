@@ -1,6 +1,6 @@
 'use client'
 import { useRoutine } from "@/lib/context/routines"
-import { eventToHourArray, filterRepeatedNumbers } from "@/utils/routine"
+import { generateHourArray, filterRepeatedNumbers, parseHourMinute } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableRowHeader } from "./style"
 import { translateWeakDays, weakDays } from "@/utils/weakDays"
 
@@ -12,30 +12,35 @@ interface IRoutineTable {
 export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const routines = useRoutine((state) => state.routine)
   const daysOnTable = useRoutine((state) => state.daysOnTable)
-  const arrayOfHours = eventToHourArray(routines)
-  const arrayOfNumber = filterRepeatedNumbers(arrayOfHours)
+  const arrayOfHours = generateHourArray(routines)
+  /* const arrayOfNumber = filterRepeatedNumbers(arrayOfHours) */
 
   const widthOfColHeader = width * 0.10
   const heightOfRowHeader = heigth * 0.06
 
   const widthOfEachCell = (width - widthOfColHeader) / daysOnTable
-  const heightOfHalfHour = ((heigth - heightOfRowHeader) / (arrayOfHours[arrayOfHours.length - 1] - arrayOfHours[0] + (arrayOfHours[arrayOfHours.length - 1] === arrayOfHours[arrayOfHours.length - 2] ? 1 : 0))) / 2
+  const heightOfHalfHour = (
+    (heigth - heightOfRowHeader) /
+    (
+      arrayOfHours.length
+      /* parseHourMinute(arrayOfHours[arrayOfHours.length - 1]).hour*2 - parseHourMinute(arrayOfHours[0]).hour*2 + ((parseHourMinute(arrayOfHours[arrayOfHours.length - 1]).minute === 30 ? 1 : 0))
+      + ((parseHourMinute(arrayOfHours[0]).minute === 30 ? 1 : 0)) */
+    )
+  )
+
+  console.log(arrayOfHours.length)
+  console.log(heightOfHalfHour, heightOfHalfHour * arrayOfHours.length)
 
   return (
     <TableContainer width={width} heigth={heigth}>
-      {arrayOfNumber.map((hour, i) => {
+      {arrayOfHours.map((hour, i) => {
+        console.log(arrayOfHours.length)
         return (
           <>
             <TableDivisionLine
               key={hour + "_00" + "line"}
               left={widthOfColHeader}
-              top={heightOfRowHeader + heightOfHalfHour * (i * 2 + 1)}
-              width={width - widthOfColHeader}
-            />
-            <TableDivisionLine
-              key={hour + "_30" + "line"}
-              left={widthOfColHeader}
-              top={heightOfRowHeader + heightOfHalfHour * (i * 2 + 2)}
+              top={heightOfRowHeader + heightOfHalfHour * (i)}
               width={width - widthOfColHeader}
             />
           </>
@@ -54,41 +59,10 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         width={widthOfColHeader} 
       >
         {arrayOfHours.map((hour, i) => {
-          let height = heightOfHalfHour;
-
-          function hourAnnotation() {
-            let leftSideHour = hour + ":"
-            let rightSideHour = ""
-
-            if(arrayOfHours[i+1] === hour) {
-              leftSideHour += "00"
-              rightSideHour = hour + ":" + "30"
-            } else if (arrayOfHours[i-1] === hour) {
-              leftSideHour += "30"
-              rightSideHour = arrayOfHours[i+1] + ":" + "00"
-              if (arrayOfHours[i+1] === undefined) {
-                if (arrayOfHours[i-1] === hour) {
-                  rightSideHour = (hour + 1 === 24 ? 0 : hour + 1) + ":" + "00"  
-                } else {
-                  rightSideHour = hour + ":" + "30"
-                }
-              }
-            } else {
-              leftSideHour += "00"
-              rightSideHour = arrayOfHours[i+1] + ":" + "00"
-            }
-
-            return leftSideHour + " - " + rightSideHour
-           }
-
-          if (arrayOfHours[i+1] !== hour && arrayOfHours[i-1] !== hour) {
-            height = heightOfHalfHour*2
-          }
-
-          const hourText = hourAnnotation()
+          if (!arrayOfHours[i+1]) return null
           return (
-            <ColHeaderData key={hourText} height={height}>
-              {hourText}
+            <ColHeaderData key={hour} height={heightOfHalfHour}>
+              {hour} - {arrayOfHours[i+1]}
             </ColHeaderData>
           )
         })}
@@ -103,8 +77,9 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         {weakDays.map((dayTag, i) =>
           <TableColDataContainer key={dayTag+i} width={widthOfEachCell}>
             {routines?.filter(({day})=> day === dayTag).map(({id, title, endHour, startHour}) => {
-              const [startH, startM] = startHour.split(":").map(x => parseInt(x))
-              const [endH, endM] = endHour.split(":").map(x => parseInt(x))
+              const {hour: startH, minute: startM} = parseHourMinute(startHour)
+              const {hour: endH, minute: endM} = parseHourMinute(endHour)
+              const {hour: firstArrayH, minute: firstArrayM} = parseHourMinute(arrayOfHours[0])
               let qntOfHalfHour = (endH - startH) * 2
               
               if(startM === 30) qntOfHalfHour -= 1
@@ -112,9 +87,16 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
 
               let heightOfEvent = qntOfHalfHour * heightOfHalfHour
 
-              let heightTopStartEvent = (startH - arrayOfHours[0]) * 2
-              if (startM === 30) heightTopStartEvent += 1
+              let heightTopStartEvent = (startH - firstArrayH) * 2
 
+              if(firstArrayM === 0 && startM === 30) {
+                heightTopStartEvent++
+              }
+
+              if(firstArrayM === 30 && startM === 0) {
+                heightTopStartEvent--
+              }
+              
               let topStart = heightTopStartEvent * heightOfHalfHour
 
               return (

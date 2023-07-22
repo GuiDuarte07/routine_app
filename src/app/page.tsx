@@ -1,5 +1,6 @@
 'use client'
 import { RoutineTable } from "@/components/RoutineTable"
+import "@/utils/routine"
 
 export default function Home() {
   return (
