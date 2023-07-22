@@ -18,7 +18,11 @@ export const TableContainer = styled.div<ISize>`
   width: ${(props) => props.width}px;
   height: ${(props) => props.heigth}px;
   position: relative;
-  background-color: grey;
+  /* background-color: grey; */
+  border: 1px solid white;
+  z-index: 1;
+  box-sizing: content-box;
+  padding-bottom: 20px;
 `
 
 export const TableRowHeader = styled.div<ISize & ILeft>`
@@ -27,19 +31,20 @@ export const TableRowHeader = styled.div<ISize & ILeft>`
   height: ${(props) => props.heigth}px;
   left: ${(props) => props.left}px;
   top: 0;
-  background-color: rgba(241, 0, 0, 0.3);
+  /* background-color: rgba(241, 0, 0, 0.911); */
   display: flex;
+  z-index: -1;
   /* border: 1px solid black; */
 `
 
 export const RowHeaderData = styled.div<{width: number}>`
   width: ${(props) => props.width}px;
   height: 100%;
-  color: white;
   font-weight: bold;
   display: flex;
   justify-content: center;
   align-items: center;
+  color: white;
   /* border: 1px solid black; */
 `
 
@@ -48,8 +53,8 @@ export const TableColHeader = styled.div<ISize & ITop>`
   width: ${(props) => props.width}px;
   height: ${(props) => props.heigth}px;
   top: ${(props) => props.top}px;
-  background-color: rgba(0, 241, 129, 0.3);
-  /* border: 1px solid black; */
+  /* background-color: rgba(0, 241, 129, 0.76); */
+  /* border-right: 1px solid black; */
 `
 
 export const ColHeaderData = styled.div<{height: number}>`
@@ -58,8 +63,10 @@ export const ColHeaderData = styled.div<{height: number}>`
   font-weight: bold;
   display: flex;
   justify-content: center;
-  align-items: center;
-  /* border: 1px solid black; */
+  align-items: flex-end;
+  /* border-bottom: 1px dashed black; */
+  box-sizing: border-box;
+  color: white
 `
 
 export const TableDataContainer = styled.div<ISize & ITop & ILeft>`
@@ -68,7 +75,7 @@ export const TableDataContainer = styled.div<ISize & ITop & ILeft>`
   height: ${(props) => props.heigth}px;
   top: ${(props) => props.top}px;
   left: ${(props) => props.left}px;
-  background-color: rgba(241, 237, 0, 0.3);
+  /* background-color: rgba(241, 237, 0, 0.3); */
   display: flex;
 `
 
@@ -76,19 +83,44 @@ export const TableColDataContainer = styled.div<{width: number}>`
   position: relative;
   width: ${(props) => props.width}px;
   height: 100%;
-  background-color: rgba(76, 73, 238, 0.589);
-  border: 1px solid black;
+  /* background-color: rgba(76, 73, 238, 0.589); */
+ /*  border: 1px solid black; */
 `
 
+
+function getRandomColor(): string {
+  const minLightness = 50; // Minimum lightness value (0-100)
+  const maxLightness = 80; // Maximum lightness value (0-100)
+
+  const hue = Math.random() * 360; // Random hue value (0-360)
+  const saturation = Math.random() * 50 + 50; // Random saturation value (50-100)
+  const lightness = Math.random() * (maxLightness - minLightness) + minLightness; // Random lightness value (50-80)
+
+  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
 export const TableEventDataCell = styled.div<{height: number} & ITop>`
-  width: 100%;
-  height: ${(props) => props.height}px;
-  top: ${(props) => props.top}px;
+  width: 95%;
+  height: calc(${(props) => props.height}px + 1px);
+  top: calc(${(props) => props.top}px - 1px);
+  left: calc(100% - 95%);
   position: absolute;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
-  line-break: auto;
+  box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
+  color: white;
+  background-color: ${getRandomColor()};
+  cursor: pointer;
+
+`
+
+export const TableDivisionLine = styled.div<{width: number, top: number, left: number}>`
+  position: absolute;
+  width: ${(props) => props.width}px;
+  top: calc(${(props) => props.top}px - 1px);
+  left: ${(props) => props.left}px;
+  height: 1px;
+  height: 1px;
+  border-top: 1px dashed white;
 `
