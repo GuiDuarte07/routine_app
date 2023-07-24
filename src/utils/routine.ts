@@ -32,11 +32,8 @@ export function generateHourArray(hoursArray: { startHour: string; endHour: stri
   const minHour = sortedHoursArray[0].startHour;
   const maxHour = sortedHoursArray[sortedHoursArray.length - 1].endHour;
   let currentHour = minHour;
-  let i = 0
 
   while (result[result.length - 1] !== maxHour) {
-    i++
-    if (i > 30) return ["errorr"]
     result.push(currentHour);
 
     const { hour, minute } = parseHourMinute(currentHour);

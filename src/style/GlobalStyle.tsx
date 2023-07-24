@@ -15,6 +15,15 @@ const GlobalStyles = createGlobalStyle`
     margin: 0;
     padding: 0;
   }
+  
+  button,
+  input {
+  border: 0;
+  padding: 0;
+  background-color: inherit;
+  cursor: pointer;
+  outline: none;
+}
 
   /* Add more global styles if necessary */
 `;

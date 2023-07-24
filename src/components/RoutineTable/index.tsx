@@ -2,7 +2,8 @@
 import { useRoutine } from "@/lib/context/routines"
 import { generateHourArray, filterRepeatedNumbers, parseHourMinute } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableRowHeader } from "./style"
-import { translateWeakDays, weakDays } from "@/utils/weakDays"
+import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
+import { getRandomColor } from "@/utils/color"
 
 interface IRoutineTable {
   width: number
@@ -13,7 +14,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const routines = useRoutine((state) => state.routine)
   const daysOnTable = useRoutine((state) => state.daysOnTable)
   const arrayOfHours = generateHourArray(routines)
-  /* const arrayOfNumber = filterRepeatedNumbers(arrayOfHours) */
+  console.log(routines)
 
   const widthOfColHeader = width * 0.10
   const heightOfRowHeader = heigth * 0.06
@@ -28,13 +29,9 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
     )
   )
 
-  console.log(arrayOfHours.length)
-  console.log(heightOfHalfHour, heightOfHalfHour * arrayOfHours.length)
-
   return (
     <TableContainer width={width} heigth={heigth}>
       {arrayOfHours.map((hour, i) => {
-        console.log(arrayOfHours.length)
         return (
           <>
             <TableDivisionLine
@@ -51,7 +48,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         left={widthOfColHeader} 
         width={width - widthOfColHeader}
         >
-        {weakDays.map(day => <RowHeaderData key={day} width={widthOfEachCell}>{translateWeakDays[day]}</RowHeaderData>)}
+        {arrayWeekDays.map(day => <RowHeaderData key={day} width={widthOfEachCell}>{translateToPortugueseWeekDays[day]}</RowHeaderData>)}
       </TableRowHeader>
       <TableColHeader 
         heigth={heigth - heightOfRowHeader} 
@@ -74,7 +71,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         top={heightOfRowHeader} 
         left={widthOfColHeader} 
       >
-        {weakDays.map((dayTag, i) =>
+        {arrayWeekDays.map((dayTag, i) =>
           <TableColDataContainer key={dayTag+i} width={widthOfEachCell}>
             {routines?.filter(({day})=> day === dayTag).map(({id, title, endHour, startHour}) => {
               const {hour: startH, minute: startM} = parseHourMinute(startHour)
@@ -104,6 +101,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                   key={id}
                   height={heightOfEvent}
                   top={topStart}
+                  style={{backgroundColor: getRandomColor()}}
                 >
                   {`${id}: ${title}`}
                     <br/>
@@ -117,50 +115,3 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
     </TableContainer>
   )
 }
-
-
-
-
-
-
-/* if (arrayOfHours[i] !== arrayOfHours[i+1] && arrayOfHours[i] !== arrayOfHours[i-1]) {
-  return (
-    <>
-      <TableDivisionLine
-        key={hour+"true"+"line"}
-        id={hour+"true"+"line"}
-        left={widthOfColHeader} 
-        top={heightOfRowHeader + heightOfHalfHour*(i)} 
-        width={width - widthOfColHeader}
-      />
-        <TableDivisionLine
-        key={hour+"true"+"_00"+"line"}
-        id={hour+"true"+"_30"+"line"}
-        left={widthOfColHeader} 
-        top={heightOfRowHeader + heightOfHalfHour*(i+1)} 
-        width={width- widthOfColHeader}
-      />
-    </>
-    
-  )
-} else if (arrayOfHours[i+1] === arrayOfHours[i]) {
-  let top = heightOfRowHeader + heightOfHalfHour*(i)
-  return (
-    <>
-      <TableDivisionLine
-      key={hour+"line"}
-      id={hour+"_00"+"line"}
-      left={0} 
-      top={top} 
-      width={width}
-      />
-      <TableDivisionLine
-        key={hour+"_30"+"line"}
-        id={hour+"_30"+"line"}
-        left={0} 
-        top={heightOfRowHeader + heightOfHalfHour*(i+1)} 
-        width={width}
-      />
-    </>
-  )
-} */

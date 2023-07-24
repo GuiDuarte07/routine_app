@@ -87,18 +87,6 @@ export const TableColDataContainer = styled.div<{width: number}>`
  /*  border: 1px solid black; */
 `
 
-
-function getRandomColor(): string {
-  const minLightness = 50; // Minimum lightness value (0-100)
-  const maxLightness = 80; // Maximum lightness value (0-100)
-
-  const hue = Math.random() * 360; // Random hue value (0-360)
-  const saturation = Math.random() * 50 + 50; // Random saturation value (50-100)
-  const lightness = Math.random() * (maxLightness - minLightness) + minLightness; // Random lightness value (50-80)
-
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
 export const TableEventDataCell = styled.div<{height: number} & ITop>`
   width: 95%;
   height: calc(${(props) => props.height}px + 1px);
@@ -110,7 +98,6 @@ export const TableEventDataCell = styled.div<{height: number} & ITop>`
   justify-content: center;
   box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
   color: white;
-  background-color: ${getRandomColor()};
   cursor: pointer;
 
 `
