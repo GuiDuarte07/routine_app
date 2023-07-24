@@ -21,7 +21,6 @@ export const CreateEvent = ({isOpen, onClose}: ICreateEvent) => {
   const [weekDay, setWeekDay] = useState<EnumDiasDaSemanas>(EnumDiasDaSemanas.SEGUNDA)
 
   const newEvent = useRoutine(state => state.addNewEvent)
-  const routines = useRoutine(state => state.routine)
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault() 
