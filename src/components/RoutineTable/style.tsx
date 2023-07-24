@@ -19,7 +19,7 @@ export const TableContainer = styled.div<ISize>`
   height: ${(props) => props.heigth}px;
   position: relative;
   /* background-color: grey; */
-  border: 1px solid white;
+  border: 1px solid ${props => props.theme.text};
   z-index: 1;
   box-sizing: content-box;
   padding-bottom: 20px;
@@ -44,7 +44,7 @@ export const RowHeaderData = styled.div<{width: number}>`
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
+  color: ${props => props.theme.text};
   /* border: 1px solid black; */
 `
 
@@ -63,10 +63,21 @@ export const ColHeaderData = styled.div<{height: number}>`
   font-weight: bold;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: start;
   /* border-bottom: 1px dashed black; */
   box-sizing: border-box;
-  color: white
+  color: ${props => props.theme.text};
+  font-size: 1rem;
+  line-height: 1;
+  vertical-align: top;
+  position: relative;
+  margin: 0 4px;
+
+  & > p {
+    position: absolute;
+    top: calc(-1rem /2);
+    left: 0;
+  }
 `
 
 export const TableDataContainer = styled.div<ISize & ITop & ILeft>`
@@ -97,17 +108,17 @@ export const TableEventDataCell = styled.div<{height: number} & ITop>`
   align-items: center;
   justify-content: center;
   box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
+  color: ${props => props.theme.text};
   color: white;
   cursor: pointer;
-
+  font-weight: 500;
 `
 
-export const TableDivisionLine = styled.div<{width: number, top: number, left: number}>`
+export const TableDivisionLine = styled.div<{width: number, top: number}>`
   position: absolute;
-  width: ${(props) => props.width}px;
+  width: calc(100% - 2rem);
   top: calc(${(props) => props.top}px - 1px);
-  left: ${(props) => props.left}px;
+  left: 1rem;
   height: 1px;
-  height: 1px;
-  border-top: 1px dashed white;
+  border-top: 1px dashed ${props => props.theme.text};
 `

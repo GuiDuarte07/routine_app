@@ -1,7 +1,10 @@
 "use client"
+import useDarkModeStore from '@/lib/context/theme'
 import StyledComponentsRegistry from '@/lib/registry'
-import GlobalStyles from '@/style/GlobalStyle'
+import GlobalStyles, { darkTheme, lightTheme } from '@/style/GlobalStyle'
 import type { Metadata } from 'next'
+import { useState } from 'react'
+import { ThemeProvider } from 'styled-components'
 /* import { Inter } from 'next/font/google' */
 
 /* const inter = Inter({ subsets: ['latin'] }) */
@@ -16,10 +19,15 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+  const darkMode = useDarkModeStore(state => state.darkMode)
+
   return (
     <html lang="pt-BR">
-      <GlobalStyles/>
-      <body><StyledComponentsRegistry>{children}</StyledComponentsRegistry></body>
+      <ThemeProvider theme={darkMode === false ? lightTheme : darkTheme}>
+        <GlobalStyles/>
+        <body><StyledComponentsRegistry>{children}</StyledComponentsRegistry></body>
+      </ThemeProvider>
     </html>
+    
   )
 }

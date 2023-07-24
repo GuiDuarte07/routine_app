@@ -22,15 +22,24 @@ function compareTimes(time1: string, time2: string): number {
   return hour1 - hour2;
 }
 
+function findBiggestHour(hour1: string, hour2: string): string {
+  return compareTimes(hour1, hour2) > 0 ? hour1 : hour2;
+}
+
 export function generateHourArray(hoursArray: { startHour: string; endHour: string }[]): string[] {
   if (hoursArray.length === 0) {
     throw new Error("The array must not be empty.");
   }
 
-  const sortedHoursArray = hoursArray.slice().sort((a, b) => compareTimes(a.startHour, b.startHour));
   const result: string[] = [];
-  const minHour = sortedHoursArray[0].startHour;
-  const maxHour = sortedHoursArray[sortedHoursArray.length - 1].endHour;
+  let minHour: string = hoursArray[0].startHour;
+  let maxHour: string = hoursArray[0].endHour;
+  
+  for (let hour of hoursArray) {
+    minHour = findBiggestHour(hour.startHour, minHour) === minHour ? hour.startHour : minHour
+    maxHour = findBiggestHour(hour.endHour, maxHour)
+  }
+
   let currentHour = minHour;
 
   while (result[result.length - 1] !== maxHour) {
@@ -44,6 +53,8 @@ export function generateHourArray(hoursArray: { startHour: string; endHour: stri
       currentHour = formatHourMinute(hour + 1, 0);
     }
   }
+
+  console.log(result)
 
   return result;
 }

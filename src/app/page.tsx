@@ -5,7 +5,7 @@ import { PlusButton } from "./style"
 import PlusIcon from "../../public/icons/plus-svgrepo-com.svg"
 import Image from "next/image"
 import { useState } from "react"
-import Modal from "@/components/RoutineTable/Modal"
+import Modal from "@/components/Modal"
 import { CreateEvent } from "@/components/CreateEvent"
 
 export default function Home() {

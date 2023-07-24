@@ -1,5 +1,5 @@
 import { styled } from "styled-components"
-import Modal from "../RoutineTable/Modal"
+import Modal from "../Modal"
 import HourPicker from "../HourPicker";
 import WeekdayPicker from "../DayPicker";
 import { FormContainer, InputText, PrimaryButton } from "./style";
