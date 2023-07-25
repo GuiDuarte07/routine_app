@@ -5,6 +5,7 @@ import GlobalStyles, { darkTheme, lightTheme } from '@/style/GlobalStyle'
 import type { Metadata } from 'next'
 import { useState } from 'react'
 import { ThemeProvider } from 'styled-components'
+import "./global.css"
 /* import { Inter } from 'next/font/google' */
 
 /* const inter = Inter({ subsets: ['latin'] }) */

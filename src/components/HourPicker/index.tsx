@@ -1,6 +1,6 @@
 
-import { ChangeEvent } from "react";
-import { SelectHour } from "./style";
+import { ChangeEvent } from "react"
+import { SelectHour } from "./style"
 
 interface IHourPicker {
   selectedHour: string
@@ -11,16 +11,16 @@ interface IHourPicker {
 
 const HourPicker = ({ selectedHour, setSelectedHour, selectedMinute, setSelectedMinute }: IHourPicker) => {
   const handleHourChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedHour(e.target.value);
-  };
+    setSelectedHour(e.target.value)
+  }
 
   const handleMinuteChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setSelectedMinute(e.target.value);
-  };
+    setSelectedMinute(e.target.value)
+  }
 
   // Generate time options for hours with half and full hour intervals
-  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  const minutes = ['00', '30'];
+  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'))
+  const minutes = ['00', '30']
 
   return (
     <div>
@@ -40,7 +40,7 @@ const HourPicker = ({ selectedHour, setSelectedHour, selectedMinute, setSelected
         ))}
       </SelectHour>
     </div>
-  );
-};
+  )
+}
 
-export default HourPicker;
+export default HourPicker

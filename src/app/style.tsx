@@ -1,4 +1,4 @@
-import { keyframes, styled } from "styled-components";
+import { keyframes, styled } from "styled-components"
 
 const rotateAnimation = keyframes`
   from {
@@ -7,7 +7,7 @@ const rotateAnimation = keyframes`
   to {
     transform: rotate(90deg);
   }
-`;
+`
 
 export const PlusButton = styled.button`
   position: fixed;
@@ -29,9 +29,9 @@ export const PlusButton = styled.button`
   &:hover {
     animation: ${rotateAnimation} 0.2s both;
   }
-`;
+`
 
 export const PlusIcon = styled.span`
   position: relative;
   top: -2px;
-`;
+`
