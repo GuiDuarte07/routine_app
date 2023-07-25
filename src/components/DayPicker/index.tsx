@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { SelectHour } from '../HourPicker/style';
-import { EnumDiasDaSemanas, arrayDiasDaSemana } from '@/utils/weakDays';
+import React, { useState } from 'react'
+import { SelectHour } from '../HourPicker/style'
+import { EnumDiasDaSemanas, arrayDiasDaSemana } from '@/utils/weakDays'
 
 interface IWeekdayPicker {
   selectWeekday: string
@@ -8,8 +8,8 @@ interface IWeekdayPicker {
 }
 const WeekdayPicker = ({selectWeekday, setSelectWeekday}:IWeekdayPicker) => {
   const handleDayChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectWeekday(e.target.value as EnumDiasDaSemanas);
-  };
+    setSelectWeekday(e.target.value as EnumDiasDaSemanas)
+  }
 
   return (
     <div>
@@ -21,7 +21,7 @@ const WeekdayPicker = ({selectWeekday, setSelectWeekday}:IWeekdayPicker) => {
         ))}
       </SelectHour>
     </div>
-  );
-};
+  )
+}
 
-export default WeekdayPicker;
+export default WeekdayPicker

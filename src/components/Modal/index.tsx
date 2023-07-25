@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
-import { MdClear } from "react-icons/md";
-import { ModalContent, ModalHeader, ModalWrapper } from './style';
+import { MdClear } from "react-icons/md"
+import { ModalContent, ModalHeader, ModalWrapper } from './style'
 
 interface IModal {
   isOpen: boolean
@@ -11,7 +11,7 @@ interface IModal {
 }
 
 export const Modal = ({ isOpen, onClose, children, title }: IModal) => {
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <ModalWrapper>
@@ -25,7 +25,7 @@ export const Modal = ({ isOpen, onClose, children, title }: IModal) => {
         {children}
       </ModalContent>
     </ModalWrapper>
-  );
-};
+  )
+}
 
-export default Modal;
+export default Modal

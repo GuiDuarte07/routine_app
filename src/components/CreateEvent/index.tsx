@@ -5,9 +5,10 @@ import WeekdayPicker from "../DayPicker"
 import { FormContainer, InputText, PrimaryButton, SecundaryButton } from "./style"
 import { useState } from "react"
 import { useRoutine } from "@/lib/context/routines"
-import { EnumDiasDaSemanas, translateToAbbreviationWeekDays } from "@/utils/weakDays"
 import { MdOutlineKeyboardBackspace } from "react-icons/md"
 import { TiDelete } from "react-icons/ti"
+import { formatHourMinute } from "@/utils/routine"
+import { EnumDiasDaSemanas, IHourEvent } from "@/types/Events"
 
 interface ICreateEvent {
   isOpen: boolean
@@ -26,9 +27,14 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
   const [endMinute, setEndMinute] = useState("30")
   const [weekDay, setWeekDay] = useState<EnumDiasDaSemanas>(EnumDiasDaSemanas.SEGUNDA)
 
-  const [hours, setHours] = useState([{startHour: "10:00", endHour: "14:30", day: EnumDiasDaSemanas.SEGUNDA}, {startHour: "15:00", endHour: "19:30", day: EnumDiasDaSemanas.QUARTA}, {startHour: "15:00", endHour: "22:30", day: EnumDiasDaSemanas.QUINTA}])
+  const [hours, setHours] = useState<IHourEvent[]>([])
 
   const newEvent = useRoutine(state => state.addNewEvent)
+
+  function newHour() {
+
+    setHours(prev => ([...prev, {day: weekDay, startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute)}]))
+  }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -92,7 +98,7 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
             </div>
 
             <div style={{gridTemplateColumns: "10px 1fr"}} className="grid">
-              <div className="w-8 h-full border-l-2 border-y-2 border-black border-solid"></div>
+              {hours.length ? <div className="w-8 h-full border-l-2 border-y-2 border-black border-solid"></div> : <div></div>}
               <div className="py-1">
                 {hours?.map(({day, startHour, endHour}) => 
                   <div className="ml-2 flex justify-between items-center py-1" key={day+startHour+endHour}>
@@ -109,7 +115,7 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
               <SecundaryButton type="button" onClick={() => setStep(0)}>
                 <MdOutlineKeyboardBackspace size={16} /> Voltar
                 </SecundaryButton>
-              <PrimaryButton type="submit">Criar</PrimaryButton>
+              <PrimaryButton type="submit" onClick={newHour}>Criar</PrimaryButton>
             </div>
           </>
         }

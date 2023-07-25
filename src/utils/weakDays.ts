@@ -1,22 +1,4 @@
-export enum EnumDiasDaSemanas {
-  SEGUNDA = "Segunda-Feira",
-  TERÇA = "Terça-Feira",
-  QUARTA = "Quarta-Feira",
-  QUINTA = "Quinta-Feira",
-  SEXTA = "Sexta-Feira",
-  SABADO = "Sabádo",
-  DOMINGO = "Domingo",
-}
-
-export enum EnumAbbreviationDays {
-  SEGUNDA = "mon",
-  TERÇA = "tues",
-  QUARTA = "wed",
-  QUINTA = "thurs",
-  SEXTA = "fri",
-  SABADO = "sat",
-  DOMINGO = "sun",
-}
+import { EnumAbbreviationDays, EnumDiasDaSemanas } from "@/types/Events"
 
 export const arrayWeekDays = [
   EnumAbbreviationDays.SEGUNDA,

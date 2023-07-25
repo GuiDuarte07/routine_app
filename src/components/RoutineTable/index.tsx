@@ -69,7 +69,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                 width={width - widthOfColHeader}
               />
             </>
-          );
+          )
         })}
         {arrayWeekDays.map((dayTag, i) =>
           <TableColDataContainer key={dayTag+i} width={widthOfEachCell}>
@@ -83,7 +83,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
               if(startM === 30) qntOfHalfHour -= 1
               if(endM === 30) qntOfHalfHour += 1
 
-              let heightOfEvent = qntOfHalfHour * heightOfHalfHour
+              const heightOfEvent = qntOfHalfHour * heightOfHalfHour
 
               let heightTopStartEvent = (startH - firstArrayH) * 2
 
@@ -95,7 +95,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                 heightTopStartEvent--
               }
               
-              let topStart = heightTopStartEvent * heightOfHalfHour
+              const topStart = heightTopStartEvent * heightOfHalfHour
 
               return (
                 <TableEventDataCell

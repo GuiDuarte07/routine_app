@@ -9,15 +9,15 @@ import Modal from "@/components/Modal"
 import { CreateEvent } from "@/components/CreateEvent"
 
 export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const openModal = () => {
-    setIsModalOpen(true);
-  };
+    setIsModalOpen(true)
+  }
 
   const closeModal = () => {
-    setIsModalOpen(false);
-  };
+    setIsModalOpen(false)
+  }
   return (
       <>
       <CreateEvent isOpen={isModalOpen} onClose={closeModal}/>
