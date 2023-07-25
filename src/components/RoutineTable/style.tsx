@@ -105,13 +105,24 @@ export const TableEventDataCell = styled.div<{height: number} & ITop>`
   left: calc(100% - 95%);
   position: absolute;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: start;
+  justify-content: start;
+  padding: 4px;
   box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
   color: ${props => props.theme.text};
   color: white;
   cursor: pointer;
   font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  div h3 {
+
+  }
+
+  div p {
+
+  }
 `
 
 export const TableDivisionLine = styled.div<{width: number, top: number}>`

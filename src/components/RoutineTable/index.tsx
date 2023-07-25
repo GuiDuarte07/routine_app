@@ -104,9 +104,10 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                   top={topStart}
                   style={{backgroundColor: getRandomColor()}}
                 >
-                  {`${title}`}
-                    <br/>
-                  {`${startHour} - ${endHour}`}
+                  <div>
+                    <h3>{`${title}`}</h3>
+                    <p>{`${startHour} - ${endHour}`}</p>
+                  </div>
                 </TableEventDataCell>
               )
             })}
