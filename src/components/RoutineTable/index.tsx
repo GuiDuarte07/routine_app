@@ -1,9 +1,8 @@
 'use client'
 import { useRoutine } from "@/lib/context/routines"
-import { generateHourArray, filterRepeatedNumbers, parseHourMinute } from "@/utils/routine"
+import { extractHoursFromEvents, generateHourArray, parseHourMinute, transformEventsToArray } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableRowHeader } from "./style"
 import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
-import { getRandomColor } from "@/utils/color"
 import { useCallback, useEffect, useMemo } from "react"
 
 interface IRoutineTable {
@@ -14,7 +13,7 @@ interface IRoutineTable {
 export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const routines = useRoutine((state) => state.routine)
   const daysOnTable = useRoutine((state) => state.daysOnTable)
-  const arrayOfHours = useMemo(() => generateHourArray(routines), [routines])
+  const arrayOfHours = useMemo(() => generateHourArray(extractHoursFromEvents(routines)), [routines])
 
   const widthOfColHeader = width * 0.10
   const heightOfRowHeader = heigth * 0.06
@@ -60,7 +59,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         left={widthOfColHeader} 
       >
         {/* Linhas */}
-        {arrayOfHours.map((hour, i) => {
+        {arrayOfHours.map((hour, i) => {routines?.flatMap(({occurrence}) => {occurrence})
           return (
             <>
               <TableDivisionLine
@@ -74,7 +73,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         {arrayWeekDays.map((dayTag, i) =>
           <TableColDataContainer key={dayTag+i} width={widthOfEachCell}>
             {/* Eventos */}
-            {routines?.filter(({day})=> day === dayTag).map(({id, title, endHour, startHour}) => {
+            {transformEventsToArray(routines).filter(({day})=> day === dayTag).map(({id, title, endHour, startHour, color}) => {
               const {hour: startH, minute: startM} = parseHourMinute(startHour)
               const {hour: endH, minute: endM} = parseHourMinute(endHour)
               const {hour: firstArrayH, minute: firstArrayM} = parseHourMinute(arrayOfHours[0])
@@ -102,7 +101,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                   key={id}
                   height={heightOfEvent}
                   top={topStart}
-                  style={{backgroundColor: getRandomColor()}}
+                  style={{backgroundColor: color}}
                 >
                   <div>
                     <h3>{`${title}`}</h3>

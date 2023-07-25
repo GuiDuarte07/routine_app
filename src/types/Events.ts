@@ -18,16 +18,22 @@ export enum EnumAbbreviationDays {
   DOMINGO = "sun",
 }
 
-export interface IHourEvent{
+export interface IHourEvent {
   startHour: string
   endHour: string
   day: EnumDiasDaSemanas
 }
 
+export interface IEventOccurrence {
+  id: string
+  day: string
+  startHour: string
+  endHour: string
+}
+
 export interface IEvent {
-  id: number;
-  title: string;
-  day: string;
-  startHour: string;
-  endHour: string;
+  id: number
+  title: string
+  color: string
+  occurrence: IEventOccurrence[]
 }

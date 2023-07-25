@@ -1,7 +1,7 @@
 import { IEvent } from "@/types/Events"
 import { ErrorRoutine } from "@/utils/error"
 import example from "@/utils/example.json"
-import { hasTimeConflictOnEvent } from "@/utils/routine"
+import { hasTimeConflict } from "@/utils/routine"
 import { create } from 'zustand'
 
 interface RoutineStates {
@@ -20,7 +20,7 @@ export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => (
   routine: example, // Assuming example is an initial array of events
   daysOnTable: 5,
   addNewEvent: (event) => {
-    if (hasTimeConflictOnEvent(event, get().routine)) {
+    if (hasTimeConflict(event, get().routine)) {
       throw ErrorRoutine("conflit", "Este horário já está ocupado por outro evento")
     }
     set((state) => ({

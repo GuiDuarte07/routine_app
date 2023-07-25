@@ -2,71 +2,89 @@
   {
     "id": 1,
     "title": "Estudar FrontEnd",
-    "day": "mon",
-    "startHour": "07:30",
-    "endHour": "10:00"
+    "color": "blue",
+    "occurrence": [
+      {
+        "id": "occ1",
+        "day": "mon",
+        "startHour": "07:30",
+        "endHour": "10:00"
+      },
+      {
+        "id": "occ2",
+        "day": "mon",
+        "startHour": "14:00",
+        "endHour": "19:00"
+      }
+    ]
   },
   {
     "id": 2,
-    "title": "Estudar FrontEnd",
-    "day": "mon",
-    "startHour": "14:00",
-    "endHour": "19:00"
+    "title": "Uninter",
+    "color": "green",
+    "occurrence": [
+      {
+        "id": "occ3",
+        "day": "tues",
+        "startHour": "10:30",
+        "endHour": "15:00"
+      },
+      {
+        "id": "occ4",
+        "day": "tues",
+        "startHour": "06:30",
+        "endHour": "10:00"
+      }
+    ]
   },
   {
     "id": 3,
-    "title": "Uninter",
-    "day": "tues",
-    "startHour": "10:30",
-    "endHour": "15:00"
+    "title": "Trabalhar",
+    "color": "red",
+    "occurrence": [
+      {
+        "id": "occ5",
+        "day": "fri",
+        "startHour": "16:00",
+        "endHour": "18:30"
+      },
+      {
+        "id": "occ6",
+        "day": "fri",
+        "startHour": "08:00",
+        "endHour": "10:30"
+      },
+      {
+        "id": "occ7",
+        "day": "wed",
+        "startHour": "07:00",
+        "endHour": "07:30"
+      }
+    ]
   },
   {
     "id": 4,
-    "title": "Uninter",
-    "day": "tues",
-    "startHour": "06:30",
-    "endHour": "10:00"
-  },
-  {
-    "id": 5,
-    "title": "Trabalhar",
-    "day": "fri",
-    "startHour": "16:00",
-    "endHour": "18:30"
-  },
-  {
-    "id": 6,
-    "title": "Trabalhar",
-    "day": "fri",
-    "startHour": "08:00",
-    "endHour": "10:30"
-  },
-  {
-    "id": 7,
     "title": "Ler livro",
-    "day": "wed",
-    "startHour": "11:00",
-    "endHour": "14:30"
-  },
-  {
-    "id": 8,
-    "title": "Ler livro",
-    "day": "wed",
-    "startHour": "18:00",
-    "endHour": "19:00"
-  },
-  {
-    "id": 8,
-    "title": "Ler livro",
-    "day": "thurs",
-    "startHour": "10:30",
-    "endHour": "18:30"
-  },
-  {
-    "id": 9,
-    "title": "Trabalhar",
-    "day": "wed",
-    "startHour": "07:00",
-    "endHour": "07:30"
+    "color": "purple",
+    "occurrence": [
+      {
+        "id": "occ8",
+        "day": "wed",
+        "startHour": "11:00",
+        "endHour": "14:30"
+      },
+      {
+        "id": "occ9",
+        "day": "wed",
+        "startHour": "18:00",
+        "endHour": "19:00"
+      },
+      {
+        "id": "occ10",
+        "day": "thurs",
+        "startHour": "10:30",
+        "endHour": "18:30"
+      }
+    ]
   }
 ]

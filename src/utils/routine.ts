@@ -55,52 +55,62 @@ export function generateHourArray(hoursArray: { startHour: string; endHour: stri
     }
   }
 
-  console.log(result)
+  return result
+}
+
+export function extractHoursFromEvents(events: IEvent[]): { startHour: string, endHour: string }[] {
+  const result: { startHour: string, endHour: string }[] = []
+
+  for (const event of events) {
+    for (const occurrence of event.occurrence) {
+      result.push({
+        startHour: occurrence.startHour,
+        endHour: occurrence.endHour,
+      })
+    }
+  }
 
   return result
 }
 
-//retorna true se o novo evento conflita com os demais
-export function hasTimeConflictOnEvent(event: IEvent, events: IEvent[]): boolean {
-  const startTimeEvent = new Date(`1970-01-01T${event.startHour}`)
-  const endTimeEvent = new Date(`1970-01-01T${event.endHour}`)
-
-  for (const otherEvent of events) {
-    if (otherEvent !== event && otherEvent.day === event.day) {
-      const startTimeOther = new Date(`1970-01-01T${otherEvent.startHour}`)
-      const endTimeOther = new Date(`1970-01-01T${otherEvent.endHour}`)
-
-      if (
-        (startTimeEvent <= endTimeOther && startTimeOther <= endTimeEvent) ||
-        (startTimeOther <= endTimeEvent && startTimeEvent <= endTimeOther)
-      ) {
-        return true
-      }
-    }
-  }
-
-  return false 
+export function transformEventsToArray(events: IEvent[]): { id: string, title: string, color: string, startHour: string, day: string, endHour: string }[] {
+  return events.flatMap((event) =>
+    event.occurrence.map((occurrence) => ({
+      id: occurrence.id,
+      title: event.title,
+      color: event.color,
+      startHour: occurrence.startHour,
+      day: occurrence.day,
+      endHour: occurrence.endHour,
+    }))
+  )
 }
 
-export function hasTimeConflictOnHours(event: IEvent, events: IEvent[]): boolean {
-  const startTimeEvent = new Date(`1970-01-01T${event.startHour}`)
-  const endTimeEvent = new Date(`1970-01-01T${event.endHour}`)
 
-  for (const otherEvent of events) {
-    if (otherEvent !== event && otherEvent.day === event.day) {
-      const startTimeOther = new Date(`1970-01-01T${otherEvent.startHour}`)
-      const endTimeOther = new Date(`1970-01-01T${otherEvent.endHour}`)
 
-      if (
-        (startTimeEvent <= endTimeOther && startTimeOther <= endTimeEvent) ||
-        (startTimeOther <= endTimeEvent && startTimeEvent <= endTimeOther)
-      ) {
-        return true
+export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
+  for (const occurrence of event.occurrence) {
+    const startTimeEvent = new Date(`1970-01-01T${occurrence.startHour}`)
+    const endTimeEvent = new Date(`1970-01-01T${occurrence.endHour}`)
+
+    for (const otherEvent of events) {
+      if (otherEvent !== event && otherEvent.occurrence.some((o) => o.day === occurrence.day)) {
+        for (const otherOccurrence of otherEvent.occurrence) {
+          const startTimeOther = new Date(`1970-01-01T${otherOccurrence.startHour}`)
+          const endTimeOther = new Date(`1970-01-01T${otherOccurrence.endHour}`)
+
+          if (
+            (startTimeEvent <= endTimeOther && startTimeOther <= endTimeEvent) ||
+            (startTimeOther <= endTimeEvent && startTimeEvent <= endTimeOther)
+          ) {
+            return true // Conflito encontrado
+          }
+        }
       }
     }
   }
 
-  return false 
+  return false // Nenhum conflito encontrado
 }
 
 export function filterRepeatedNumbers(array: number[]): number[] {
