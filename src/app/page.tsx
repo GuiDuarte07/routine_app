@@ -6,7 +6,7 @@ import PlusIcon from "../../public/icons/plus-svgrepo-com.svg"
 import Image from "next/image"
 import { useState } from "react"
 import Modal from "@/components/Modal"
-import { CreateEvent } from "@/components/CreateEvent"
+import { CreateEvent } from "@/components/EventDialog/CreateEvent"
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -20,7 +20,7 @@ export default function Home() {
   }
   return (
       <>
-      <CreateEvent isOpen={isModalOpen} onClose={closeModal}/>
+      {isModalOpen && <CreateEvent isOpen={isModalOpen} onClose={closeModal}/>}
       <main style={{margin: "100px 0", display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
           <RoutineTable width={1100} heigth={1200}/>
           <PlusButton onClick={() => openModal()}><Image src={PlusIcon} alt="Novo Evento" width={30} height={30} /></PlusButton>

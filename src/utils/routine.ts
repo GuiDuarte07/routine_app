@@ -1,4 +1,4 @@
-import { IEvent } from "@/types/Events"
+import { IEvent, IHourEvent } from "@/types/Events"
 
 export function parseHourMinute(time: string): { hour: number; minute: number } {
   const [hourStr, minuteStr] = time.split(":")
@@ -86,9 +86,8 @@ export function transformEventsToArray(events: IEvent[]): { id: string, title: s
   )
 }
 
-
-
 export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
+  console.log(event)
   for (const occurrence of event.occurrence) {
     const startTimeEvent = new Date(`1970-01-01T${occurrence.startHour}`)
     const endTimeEvent = new Date(`1970-01-01T${occurrence.endHour}`)
@@ -100,11 +99,11 @@ export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
           const endTimeOther = new Date(`1970-01-01T${otherOccurrence.endHour}`)
 
           if (
-            (startTimeEvent <= endTimeOther && startTimeOther <= endTimeEvent) ||
-            (startTimeOther <= endTimeEvent && startTimeEvent <= endTimeOther)
+            (startTimeEvent < endTimeOther && startTimeOther < endTimeEvent) ||
+            (startTimeOther < endTimeEvent && startTimeEvent < endTimeOther)
           ) {
             return true // Conflito encontrado
-          }
+          }     
         }
       }
     }
@@ -113,21 +112,29 @@ export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
   return false // Nenhum conflito encontrado
 }
 
-export function filterRepeatedNumbers(array: number[]): number[] {
-  // Create a new Set to store unique numbers
-  const uniqueNumbers = new Set()
+export function hasOccurrenceConflict(newHour: IHourEvent, hours: IHourEvent[]): boolean {
+  const startTimeNew = new Date(`1970-01-01T${newHour.startHour}`)
+  const endTimeNew = new Date(`1970-01-01T${newHour.endHour}`)
 
-  // Create a new array to store the filtered numbers
-  const filteredArray = []
+  for (const hour of hours) {
+    if (hour.day === newHour.day) {
+      const startTimeExisting = new Date(`1970-01-01T${hour.startHour}`)
+      const endTimeExisting = new Date(`1970-01-01T${hour.endHour}`)
 
-  for (const number of array) {
-    // Check if the number is already in the Set
-    if (!uniqueNumbers.has(number)) {
-      // If it's not in the Set, add it to both the Set and the filteredArray
-      uniqueNumbers.add(number)
-      filteredArray.push(number)
+      if (
+        (startTimeNew <= endTimeExisting && startTimeExisting <= endTimeNew) ||
+        (startTimeExisting <= endTimeNew && startTimeNew <= endTimeExisting)
+      ) {
+        return true
+      }
     }
   }
 
-  return filteredArray
+  return false
 }
+
+
+
+
+
+
