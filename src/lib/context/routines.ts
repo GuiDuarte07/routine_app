@@ -17,11 +17,11 @@ interface RoutineActions {
 
 
 export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => ({
-  routine: example, // Assuming example is an initial array of events
+  routine: example as IEvent[], // Assuming example is an initial array of events
   daysOnTable: 5,
   addNewEvent: (event) => {
     if (hasTimeConflict(event, get().routine)) {
-      throw ErrorRoutine("conflit", "Este horário já está ocupado por outro evento")
+      throw ErrorRoutine("CONFLICT", "Este horário já está ocupado por outro evento")
     }
     set((state) => ({
       routine: [...state.routine, event], // Add the new event to the routine array

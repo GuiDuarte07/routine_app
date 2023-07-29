@@ -1,4 +1,4 @@
-import { IEvent, IHourEvent } from "@/types/Events"
+import { IEvent, IEventOccurrence, IHourEvent, IHourEventTranslated } from "@/types/Events"
 
 export function parseHourMinute(time: string): { hour: number; minute: number } {
   const [hourStr, minuteStr] = time.split(":")
@@ -112,7 +112,7 @@ export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
   return false // Nenhum conflito encontrado
 }
 
-export function hasOccurrenceConflict(newHour: IHourEvent, hours: IHourEvent[]): boolean {
+export function hasOccurrenceConflict(newHour: IHourEvent | IHourEventTranslated, hours: IHourEvent[] | IEventOccurrence[]): boolean {
   const startTimeNew = new Date(`1970-01-01T${newHour.startHour}`)
   const endTimeNew = new Date(`1970-01-01T${newHour.endHour}`)
 

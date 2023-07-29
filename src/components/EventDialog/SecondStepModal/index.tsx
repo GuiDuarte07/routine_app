@@ -1,6 +1,6 @@
 import WeekdayPicker from '@/components/DayPicker'
 import HourPicker from '@/components/HourPicker'
-import { EnumDiasDaSemanas, IHourEvent } from '@/types/Events'
+import { EnumAbbreviationDays, IEventOccurrence } from '@/types/Events'
 import React, { Dispatch, SetStateAction } from 'react'
 import { PrimaryButton, SecundaryButton } from '../CreateEvent/style'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
@@ -17,10 +17,10 @@ interface ISecondStepModal {
   setEndHour: Dispatch<SetStateAction<string>>
   endMinute: string
   setEndMinute: Dispatch<SetStateAction<string>>
-  weekDay: EnumDiasDaSemanas
-  setWeekDay: Dispatch<SetStateAction<EnumDiasDaSemanas>>
+  weekDay: EnumAbbreviationDays
+  setWeekDay: Dispatch<SetStateAction<EnumAbbreviationDays>>
   newHour: () => void
-  hours: IHourEvent[]
+  hours: IEventOccurrence[]
   setStep: Dispatch<SetStateAction<0 | 1>>
 }
 

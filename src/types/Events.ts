@@ -18,6 +18,12 @@ export enum EnumAbbreviationDays {
   DOMINGO = "sun",
 }
 
+export interface IHourEventTranslated {
+  startHour: string
+  endHour: string
+  day: EnumAbbreviationDays
+}
+
 export interface IHourEvent {
   startHour: string
   endHour: string

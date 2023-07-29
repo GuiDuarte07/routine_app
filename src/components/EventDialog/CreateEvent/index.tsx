@@ -3,8 +3,7 @@ import { FormContainer } from "./style"
 import { useState } from "react"
 import { useRoutine } from "@/lib/context/routines"
 import { formatHourMinute, hasOccurrenceConflict, hasTimeConflict } from "@/utils/routine"
-import { EnumDiasDaSemanas, ErrorTypesRoutine, IHourEvent } from "@/types/Events"
-import { translateToAbbreviationWeekDays } from "@/utils/weakDays"
+import { EnumAbbreviationDays, ErrorTypesRoutine, IEventOccurrence } from "@/types/Events"
 import FirstStepForm from "../FirstStepModal"
 import SecondStepModal from "../SecondStepModal"
 
@@ -23,11 +22,11 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
   const [startMinute, setStartMinute] = useState("00")
   const [endHour, setEndHour] = useState("10")
   const [endMinute, setEndMinute] = useState("30")
-  const [weekDay, setWeekDay] = useState<EnumDiasDaSemanas>(EnumDiasDaSemanas.SEGUNDA)
+  const [weekDay, setWeekDay] = useState<EnumAbbreviationDays>(EnumAbbreviationDays.SEGUNDA)
 
   const routines = useRoutine(state => state.routine)
 
-  const [hours, setHours] = useState<IHourEvent[]>([])
+  const [hours, setHours] = useState<IEventOccurrence[]>([])
 
   const [errorMessage, setErrorMessage] = useState("")
 
@@ -44,16 +43,10 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
 
   function newHour() {
     errorMessage && setErrorMessage("")
-    const newOccurrence = {day: weekDay, startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute)}
 
-    if (hasOccurrenceConflict(newOccurrence, hours)) {
-      setErrorMessage("Este horário conflita com os demais já inseridos")
-      return
-    }
+    const newEventOccurrences = structuredClone(hours)
 
-    const newEventOccurrences = hours.map(({startHour, endHour, day}, i) => ({startHour, endHour, day: translateToAbbreviationWeekDays[day], id: i.toString()}))
-
-    newEventOccurrences.push({day: translateToAbbreviationWeekDays[weekDay], startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute), id: newEventOccurrences.length.toString()})
+    newEventOccurrences.push({day: weekDay, startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute), id: newEventOccurrences.length.toString()})
 
     const hasConflict = hasTimeConflict({title, color, id: 0, occurrence: newEventOccurrences}, routines)
 
@@ -61,18 +54,24 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
       setErrorMessage("Esse horário e dia conflita com horários da sua rotina")
       return
     }
+
+    const newOccurrence = {day: weekDay, startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute), id: newEventOccurrences.length.toString()}
+
+    if (hasOccurrenceConflict(newOccurrence, hours)) {
+      setErrorMessage("Este horário conflita com os demais já inseridos")
+      return
+    }
     setHours(prev => ([...prev, newOccurrence]))
   }
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
-    const eventOccurrences = hours.map(({startHour, endHour, day}, i) => ({startHour, endHour, day: translateToAbbreviationWeekDays[day], id: i.toString()}))
     try {
       newEvent({
         id: Math.ceil(Math.random() * 10000),
         title,
         color,
-        occurrence: eventOccurrences
+        occurrence: hours
       })
 
       onClose()
