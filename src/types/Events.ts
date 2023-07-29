@@ -26,7 +26,7 @@ export interface IHourEvent {
 
 export interface IEventOccurrence {
   id: string
-  day: string
+  day: EnumAbbreviationDays
   startHour: string
   endHour: string
 }
@@ -37,3 +37,6 @@ export interface IEvent {
   color: string
   occurrence: IEventOccurrence[]
 }
+
+export type ErrorTypesRoutine =
+| "CONFLICT"

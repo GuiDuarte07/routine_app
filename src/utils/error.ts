@@ -1,4 +1,6 @@
-export function ErrorRoutine(type: string, message: string) {
+import { ErrorTypesRoutine } from "@/types/Events"
+
+export function ErrorRoutine(type: ErrorTypesRoutine, message: string) {
   const error = new Error()
 
   error.cause = type
