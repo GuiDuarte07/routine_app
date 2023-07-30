@@ -5,6 +5,7 @@ import React, { Dispatch, SetStateAction } from 'react'
 import { PrimaryButton, SecundaryButton } from '../CreateEvent/style'
 import { MdOutlineKeyboardBackspace } from 'react-icons/md'
 import { TiDelete } from 'react-icons/ti'
+import { translateToPortugueseWeekDays } from '@/utils/weakDays'
 
 interface ISecondStepModal {
   color: string
@@ -45,7 +46,7 @@ function SecondStepModal({color, title, startHour, startMinute, setStartHour, se
             <label htmlFor="weekDay">
               Dia da semana
             </label>
-            <WeekdayPicker selectWeekday={weekDay} setSelectWeekday={setWeekDay} />
+            <WeekdayPicker selectWeekday={translateToPortugueseWeekDays[weekDay]} setSelectWeekday={setWeekDay} />
           </div>
           <button type="button" onClick={newHour} className="p-2 rounded text-white bg-slate-600 text-sm cursor-pointer">
             Confirmar
@@ -59,7 +60,7 @@ function SecondStepModal({color, title, startHour, startMinute, setStartHour, se
           {hours?.map(({ day, startHour, endHour }) =>
             <div className="ml-2 flex justify-between items-center py-1" key={day + startHour + endHour}>
               <p className="text-base">
-                <span>{day}</span> : <span>{startHour}</span> - <span>{endHour}</span>
+                <span>{translateToPortugueseWeekDays[day]}</span> : <span>{startHour}</span> - <span>{endHour}</span>
               </p>
               <button type="button" className="cursor-pointer "><TiDelete size={18} className="text-red-600 bg-white rounded" /></button>
             </div>

@@ -1,26 +1,29 @@
 import { IEvent } from "@/types/Events"
 import { ErrorRoutine } from "@/utils/error"
 import example from "@/utils/example.json"
-import { hasTimeConflict } from "@/utils/routine"
+import { newEventHasTimeConflict } from "@/utils/routine"
 import { create } from 'zustand'
 
 interface RoutineStates {
   routine: IEvent[]
   daysOnTable: number
+  activeEditEvent: number | undefined
 }
 
 interface RoutineActions {
   addNewEvent: (event: IEvent) => void
   deleteEvent: (id: number) => void
   editEvent: (event: IEvent) => void
+  changeEditEventDialog: (option: number | undefined) => void
 }
 
 
 export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => ({
   routine: example as IEvent[], // Assuming example is an initial array of events
   daysOnTable: 5,
+  activeEditEvent: undefined,
   addNewEvent: (event) => {
-    if (hasTimeConflict(event, get().routine)) {
+    if (newEventHasTimeConflict(event, get().routine)) {
       throw ErrorRoutine("CONFLICT", "Este horário já está ocupado por outro evento")
     }
     set((state) => ({
@@ -37,4 +40,7 @@ export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => (
         existingEvent.id === event.id ? event : existingEvent // Replace the existing event with the edited event
       ),
     })),
+  changeEditEventDialog(option) {
+    set(() => ({activeEditEvent: option}))
+  },
 }))

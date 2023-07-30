@@ -1,7 +1,7 @@
 import Modal from "../../Modal"
 import { useState } from "react"
 import { useRoutine } from "@/lib/context/routines"
-import { formatHourMinute, hasOccurrenceConflict, hasTimeConflict } from "@/utils/routine"
+import { EditEventHasTimeConflict, formatHourMinute, hasOccurrenceConflict, newEventHasTimeConflict } from "@/utils/routine"
 import { EnumAbbreviationDays, ErrorTypesRoutine, IEventOccurrence } from "@/types/Events"
 import FirstStepForm from "../FirstStepModal"
 import SecondStepModal from "../SecondStepModal"
@@ -52,7 +52,8 @@ export const EditEventModal = ({ isOpen, onClose, idEvent }: IEditEventModal) =>
 
     newEventOccurrences.push({day: weekDay, startHour: formatHourMinute(startHour, startMinute), endHour: formatHourMinute(endHour, endMinute), id: newEventOccurrences.length.toString()})
 
-    const hasConflict = hasTimeConflict({title, color, id: 0, occurrence: newEventOccurrences}, routines)
+    const hasConflict = EditEventHasTimeConflict({title, color, id: event?.id as number, occurrence: newEventOccurrences}, routines)
+    console.log(hasConflict)
 
     if (hasConflict) {
       setErrorMessage("Esse horário e dia conflita com horários da sua rotina")
@@ -88,7 +89,7 @@ export const EditEventModal = ({ isOpen, onClose, idEvent }: IEditEventModal) =>
   }
 
   return (
-    <Modal title="Criar novo evento" isOpen={isOpen} onClose={onClose}>
+    <Modal title="Editar Evento" isOpen={isOpen} onClose={onClose}>
       <FormContainer onSubmit={onSubmit}>
         {step === 0 && 
           <FirstStepForm 

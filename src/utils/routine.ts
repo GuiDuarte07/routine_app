@@ -73,9 +73,10 @@ export function extractHoursFromEvents(events: IEvent[]): { startHour: string, e
   return result
 }
 
-export function transformEventsToArray(events: IEvent[]): { id: string, title: string, color: string, startHour: string, day: string, endHour: string }[] {
+export function transformEventsToArray(events: IEvent[]): {eventId: number, id: string, title: string, color: string, startHour: string, day: string, endHour: string }[] {
   return events.flatMap((event) =>
     event.occurrence.map((occurrence) => ({
+      eventId: event.id,
       id: occurrence.id,
       title: event.title,
       color: event.color,
@@ -86,8 +87,38 @@ export function transformEventsToArray(events: IEvent[]): { id: string, title: s
   )
 }
 
-export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
-  console.log(event)
+export function EditEventHasTimeConflict(event: IEvent, events: IEvent[]): boolean {
+  for (const occurrence of event.occurrence) {
+    const startTimeEvent = new Date(`1970-01-01T${occurrence.startHour}`)
+    const endTimeEvent = new Date(`1970-01-01T${occurrence.endHour}`)
+
+    for (const otherEvent of events) {
+      if (event.id === otherEvent.id) break
+
+      if (otherEvent !== event && otherEvent.occurrence.some((o) => o.day === occurrence.day)) {
+        for (const otherOccurrence of otherEvent.occurrence) {
+          const startTimeOther = new Date(`1970-01-01T${otherOccurrence.startHour}`)
+          const endTimeOther = new Date(`1970-01-01T${otherOccurrence.endHour}`)
+
+          if (
+            (startTimeEvent < endTimeOther && startTimeOther < endTimeEvent) ||
+            (startTimeOther < endTimeEvent && startTimeEvent < endTimeOther)
+          ) {
+            console.log(startTimeEvent, endTimeEvent, startTimeOther, endTimeOther)
+            console.log(startTimeEvent < endTimeOther, startTimeOther < endTimeEvent)
+            console.log(startTimeOther < endTimeEvent, startTimeEvent < endTimeOther)
+            console.log(otherOccurrence, occurrence)
+            return true // Conflito encontrado
+          }     
+        }
+      }
+    }
+  }
+
+  return false // Nenhum conflito encontrado
+}
+
+export function newEventHasTimeConflict(event: IEvent, events: IEvent[]): boolean {
   for (const occurrence of event.occurrence) {
     const startTimeEvent = new Date(`1970-01-01T${occurrence.startHour}`)
     const endTimeEvent = new Date(`1970-01-01T${occurrence.endHour}`)
@@ -102,6 +133,10 @@ export function hasTimeConflict(event: IEvent, events: IEvent[]): boolean {
             (startTimeEvent < endTimeOther && startTimeOther < endTimeEvent) ||
             (startTimeOther < endTimeEvent && startTimeEvent < endTimeOther)
           ) {
+            console.log(startTimeEvent, endTimeEvent, startTimeOther, endTimeOther)
+            console.log(startTimeEvent < endTimeOther, startTimeOther < endTimeEvent)
+            console.log(startTimeOther < endTimeEvent, startTimeEvent < endTimeOther)
+            console.log(otherOccurrence, occurrence)
             return true // Conflito encontrado
           }     
         }
