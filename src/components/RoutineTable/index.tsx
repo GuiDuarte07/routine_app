@@ -3,10 +3,11 @@ import { useRoutine } from "@/lib/context/routines"
 import { extractHoursFromEvents, generateHourArray, parseHourMinute, transformEventsToArray } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableEventDataCellContainer, TableEventMoreOptions, TableRowHeader } from "./style"
 import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
-import { useMemo, useState, useRef } from "react"
+import { useMemo, useState, useRef, useEffect } from "react"
 
 import {BiEdit, BiMove} from "react-icons/bi"
 import {AiOutlineDelete} from "react-icons/ai"
+import { startDragMove } from "@/utils/DragEvent"
 
 interface IRoutineTable {
   width: number
@@ -18,6 +19,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const daysOnTable = useRoutine((state) => state.daysOnTable)
   const deleteOccurrence = useRoutine((state) => state.deleteOccurrence)
   const changeEditEventDialog = useRoutine((state) => state.changeEditEventDialog)
+
   const arrayOfHours = useMemo(() => generateHourArray(extractHoursFromEvents(routines)), [routines])
 
   const widthOfColHeader = width * 0.10
@@ -41,6 +43,18 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   function removeOptionsOnMouseOut() {
     mouseOutTimer.current = setTimeout(() => setMouseHoverId(undefined), 500)
   }
+  const [moveDataCellId, setMoveDataCellId] = useState<string | undefined>(undefined)
+  const eventDataCellContainerRef = useRef<HTMLElement>(null)
+
+  function startMoveOccurrence(id: string) {
+    setMoveDataCellId(id)
+  }
+
+  useEffect(() => {
+    if (moveDataCellId) {
+      startDragMove(eventDataCellContainerRef.current as HTMLElement)
+    }
+  }, [moveDataCellId])
 
   return (
     <TableContainer width={width} heigth={heigth}>
@@ -66,7 +80,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         })}
       </TableColHeader>
 
-      <TableDataContainer 
+      <TableDataContainer
         heigth={heigth - heightOfRowHeader} 
         width={width-widthOfColHeader} 
         top={heightOfRowHeader} 
@@ -85,7 +99,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
           )
         })}
         {arrayWeekDays.map((dayTag, i) =>
-          <TableColDataContainer key={dayTag+i} width={widthOfEachCell}>
+          <TableColDataContainer id={dayTag} key={dayTag+i} width={widthOfEachCell}>
             {/* Eventos */}
             {transformEventsToArray(routines).filter(({day})=> day === dayTag).map(({eventId, id, title, endHour, startHour, color}) => {
               const {hour: startH, minute: startM} = parseHourMinute(startHour)
@@ -109,10 +123,12 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
               }
               
               const topStart = heightTopStartEvent * heightOfHalfHour
-
+              
               return (
                 <TableEventDataCellContainer
+                  {...(moveDataCellId === id && {ref:eventDataCellContainerRef})}
                   key={id}
+                  id={id}
                   height={heightOfEvent}
                   top={topStart}
                   style={{backgroundColor: color}}
@@ -130,7 +146,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                         <button onClick={() => changeEditEventDialog(eventId)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <BiEdit aria-label="Editar"/>
                         </button>
-                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                        <button onClick={() => startMoveOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <BiMove/>
                         </button>
                         <button onClick={() => deleteOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
