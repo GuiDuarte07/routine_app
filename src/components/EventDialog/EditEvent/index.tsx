@@ -1,7 +1,7 @@
 import Modal from "../../Modal"
 import { useState } from "react"
 import { useRoutine } from "@/lib/context/routines"
-import { EditEventHasTimeConflict, formatHourMinute, hasOccurrenceConflict, newEventHasTimeConflict } from "@/utils/routine"
+import { EditEventHasTimeConflict, formatHourMinute, hasOccurrenceConflict } from "@/utils/routine"
 import { EnumAbbreviationDays, ErrorTypesRoutine, IEventOccurrence } from "@/types/Events"
 import FirstStepForm from "../FirstStepModal"
 import SecondStepModal from "../SecondStepModal"
@@ -118,6 +118,7 @@ export const EditEventModal = ({ isOpen, onClose, idEvent }: IEditEventModal) =>
             setStep={setStep}
             weekDay={weekDay}
             setWeekDay={setWeekDay}
+            setHours={setHours}
           />
         }
       </FormContainer>

@@ -113,6 +113,7 @@ export const CreateEvent = ({ isOpen, onClose }: ICreateEvent) => {
             setStep={setStep}
             weekDay={weekDay}
             setWeekDay={setWeekDay}
+            setHours={setHours}
           />
         }
       </FormContainer>

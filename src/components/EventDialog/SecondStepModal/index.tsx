@@ -22,10 +22,16 @@ interface ISecondStepModal {
   setWeekDay: Dispatch<SetStateAction<EnumAbbreviationDays>>
   newHour: () => void
   hours: IEventOccurrence[]
+  setHours: Dispatch<SetStateAction<IEventOccurrence[]>>
   setStep: Dispatch<SetStateAction<0 | 1>>
 }
 
-function SecondStepModal({color, title, startHour, startMinute, setStartHour, setStartMinute, endHour, endMinute, setEndHour, setEndMinute, hours, newHour, weekDay, setWeekDay, setStep}: ISecondStepModal) {
+function SecondStepModal({color, title, startHour, startMinute, setStartHour, setStartMinute, endHour, endMinute, setEndHour, setEndMinute, hours, newHour, weekDay, setWeekDay, setStep, setHours}: ISecondStepModal) {
+  function removeOcurrence(occId: string) {
+    setHours(prev => {
+      return prev.filter(({id}) => id !== occId)
+    })
+  }
   return (
     <>
       <h3>Nome do evento: <span style={{ color: color }}>{title}</span></h3>
@@ -57,12 +63,12 @@ function SecondStepModal({color, title, startHour, startMinute, setStartHour, se
       <div style={{ gridTemplateColumns: "10px 1fr" }} className="grid">
         {hours.length ? <div className="w-8 h-full border-l-2 border-y-2 border-black border-solid"></div> : <div></div>}
         <div className="py-1">
-          {hours?.map(({ day, startHour, endHour }) =>
+          {hours?.map(({ id, day, startHour, endHour }) =>
             <div className="ml-2 flex justify-between items-center py-1" key={day + startHour + endHour}>
               <p className="text-base">
                 <span>{translateToPortugueseWeekDays[day]}</span> : <span>{startHour}</span> - <span>{endHour}</span>
               </p>
-              <button type="button" className="cursor-pointer "><TiDelete size={18} className="text-red-600 bg-white rounded" /></button>
+              <button onClick={() => removeOcurrence(id)} type="button" className="cursor-pointer "><TiDelete size={18} className="text-red-600 bg-white rounded" /></button>
             </div>
           )}
         </div>
