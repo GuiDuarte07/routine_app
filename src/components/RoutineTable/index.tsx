@@ -16,6 +16,7 @@ interface IRoutineTable {
 export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const routines = useRoutine((state) => state.routine)
   const daysOnTable = useRoutine((state) => state.daysOnTable)
+  const deleteOccurrence = useRoutine((state) => state.deleteOccurrence)
   const changeEditEventDialog = useRoutine((state) => state.changeEditEventDialog)
   const arrayOfHours = useMemo(() => generateHourArray(extractHoursFromEvents(routines)), [routines])
 
@@ -115,7 +116,6 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                   height={heightOfEvent}
                   top={topStart}
                   style={{backgroundColor: color}}
-                  onClick={() => changeEditEventDialog(eventId)}
                   onMouseEnter={() => addOptionsOnMouseIn(id)}
                   onMouseLeave={removeOptionsOnMouseOut}
                 >
@@ -127,13 +127,13 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                   </TableEventDataCell>
                   {mouseHoverId === id && 
                     <TableEventMoreOptions className="flex flex-col items-center justify-start">
-                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
-                          <BiEdit/>
+                        <button onClick={() => changeEditEventDialog(eventId)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                          <BiEdit aria-label="Editar"/>
                         </button>
                         <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <BiMove/>
                         </button>
-                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                        <button onClick={() => deleteOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <AiOutlineDelete/>
                         </button>
                     </TableEventMoreOptions>

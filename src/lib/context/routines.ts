@@ -15,6 +15,7 @@ interface RoutineActions {
   deleteEvent: (id: number) => void
   editEvent: (event: IEvent) => void
   changeEditEventDialog: (option: number | undefined) => void
+  deleteOccurrence: (occId: string) => void
 }
 
 
@@ -42,5 +43,22 @@ export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => (
     })),
   changeEditEventDialog(option) {
     set(() => ({activeEditEvent: option}))
+  },
+  deleteOccurrence: (occId) => {
+    set((state) => {
+      const updatedRoutine = state.routine.map((event) => {
+        // Procura o evento com a ocorrência a deletar
+        if (event.occurrence.some((occurrence) => occurrence.id === occId)) {
+          // Remove a ocorrência que possui o occId
+          return {
+            ...event,
+            occurrence: event.occurrence.filter((occurrence) => occurrence.id !== occId),
+          }
+        }
+        return event // Se a ocorrência não for achada, o evento é retornado por inteiro
+      })
+
+      return { routine: updatedRoutine }
+    })
   },
 }))
