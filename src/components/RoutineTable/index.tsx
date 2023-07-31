@@ -1,9 +1,12 @@
 'use client'
 import { useRoutine } from "@/lib/context/routines"
 import { extractHoursFromEvents, generateHourArray, parseHourMinute, transformEventsToArray } from "@/utils/routine"
-import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableRowHeader } from "./style"
+import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableEventDataCellContainer, TableEventMoreOptions, TableRowHeader } from "./style"
 import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
-import { useMemo } from "react"
+import { useMemo, useState, useRef } from "react"
+
+import {BiEdit, BiMove} from "react-icons/bi"
+import {AiOutlineDelete} from "react-icons/ai"
 
 interface IRoutineTable {
   width: number
@@ -21,6 +24,22 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
 
   const widthOfEachCell = (width - widthOfColHeader) / daysOnTable
   const heightOfHalfHour = (heigth - heightOfRowHeader) / arrayOfHours.length
+
+  const [mouseHoverId, setMouseHoverId] = useState<undefined | string>(undefined)
+  const mouseOutTimer = useRef<NodeJS.Timeout>()
+
+  function addOptionsOnMouseIn(id: string) {
+    if (mouseOutTimer.current) {
+      clearTimeout(mouseOutTimer.current)
+      mouseOutTimer.current = undefined
+    }
+
+    setMouseHoverId(id)
+  }
+
+  function removeOptionsOnMouseOut() {
+    mouseOutTimer.current = setTimeout(() => setMouseHoverId(undefined), 500)
+  }
 
   return (
     <TableContainer width={width} heigth={heigth}>
@@ -91,18 +110,35 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
               const topStart = heightTopStartEvent * heightOfHalfHour
 
               return (
-                <TableEventDataCell
+                <TableEventDataCellContainer
                   key={id}
                   height={heightOfEvent}
                   top={topStart}
                   style={{backgroundColor: color}}
                   onClick={() => changeEditEventDialog(eventId)}
+                  onMouseEnter={() => addOptionsOnMouseIn(id)}
+                  onMouseLeave={removeOptionsOnMouseOut}
                 >
-                  <div>
-                    <h3>{`${title}`}</h3>
-                    <p>{`${startHour} - ${endHour}`}</p>
-                  </div>
-                </TableEventDataCell>
+                  <TableEventDataCell>
+                    <div>
+                      <h3>{`${title}`}</h3>
+                      <p>{`${startHour} - ${endHour}`}</p>
+                    </div>
+                  </TableEventDataCell>
+                  {mouseHoverId === id && 
+                    <TableEventMoreOptions className="flex flex-col items-center justify-start">
+                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                          <BiEdit/>
+                        </button>
+                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                          <BiMove/>
+                        </button>
+                        <button type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                          <AiOutlineDelete/>
+                        </button>
+                    </TableEventMoreOptions>
+                  }
+                </TableEventDataCellContainer>
               )
             })}
           </TableColDataContainer>

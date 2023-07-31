@@ -98,31 +98,38 @@ export const TableColDataContainer = styled.div<{width: number}>`
  /*  border: 1px solid black; */
 `
 
-export const TableEventDataCell = styled.div<{height: number} & ITop>`
+export const TableEventDataCellContainer = styled.div<{height: number} & ITop>`
   width: 95%;
   height: calc(${(props) => props.height}px + 1px);
   top: calc(${(props) => props.top}px - 1px);
   left: calc(100% - 95%);
   position: absolute;
+  padding: 4px;
+  box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
+`
+
+export const TableEventDataCell = styled.div`
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: start;
   justify-content: start;
-  padding: 4px;
-  box-shadow: 3px 3px 0px 0px rgba(97, 96, 96, 0.8);
   color: ${props => props.theme.text};
   color: white;
   cursor: pointer;
   font-weight: 500;
   overflow: hidden;
   text-overflow: ellipsis;
+`
 
-  div h3 {
-
-  }
-
-  div p {
-
-  }
+export const TableEventMoreOptions = styled.div`
+  position: absolute;
+  right: -35px;
+  top: 0px;
+  min-height: 50px;
+  width: 30px;
+  background-color: #0088ff;
+  z-index: 9999;
 `
 
 export const TableDivisionLine = styled.div<{width: number, top: number}>`
