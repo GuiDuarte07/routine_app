@@ -1,5 +1,4 @@
-import React from 'react'
-import styled from 'styled-components'
+import { useEffect } from 'react'
 import { MdClear } from "react-icons/md"
 import { ModalContent, ModalHeader, ModalWrapper } from './style'
 
@@ -11,6 +10,18 @@ interface IModal {
 }
 
 export const Modal = ({ isOpen, onClose, children, title }: IModal) => {
+  useEffect(() => {
+    const escEvent = (e: KeyboardEvent) => {
+      if (e.key === "Escape")
+        onClose()
+    }
+    window.addEventListener("keydown", escEvent)
+  
+    return () => {
+      window.removeEventListener("keydown", escEvent)
+    }
+  }, [onClose])
+
   if (!isOpen) return null
 
   return (
