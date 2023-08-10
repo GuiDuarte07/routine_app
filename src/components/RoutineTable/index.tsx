@@ -1,13 +1,16 @@
 'use client'
 import { useRoutine } from "@/lib/context/routines"
-import { extractHoursFromEvents, generateHourArray, parseHourMinute, transformEventsToArray } from "@/utils/routine"
+import { extractHoursFromEvents, generateHourArray, transformEventsToArray } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableEventDataCellContainer, TableEventMoreOptions, TableRowHeader } from "./style"
 import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
-import { useMemo, useState, useRef, useEffect } from "react"
+import { useMemo, useState, useRef, useEffect, KeyboardEvent } from "react"
 
 import {BiEdit, BiMove} from "react-icons/bi"
 import {AiOutlineDelete} from "react-icons/ai"
-import { startDragMove } from "@/utils/DragEvent"
+import { DragEventFunction, startDragMove } from "@/utils/DragEvent"
+import { calculeEventDimensions } from "@/utils/createTable"
+import { calculateHeightBetweenHours, dayOfWeekBasedOnLeft, getAvailableSpaces } from "@/utils/eventSize"
+import { EnumAbbreviationDays, IEventOccurrence } from "@/types/Events"
 
 interface IRoutineTable {
   width: number
@@ -19,6 +22,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const daysOnTable = useRoutine((state) => state.daysOnTable)
   const deleteOccurrence = useRoutine((state) => state.deleteOccurrence)
   const changeEditEventDialog = useRoutine((state) => state.changeEditEventDialog)
+  const moveEventByKey = useRoutine(state => state.moveEventByKey)
 
   const arrayOfHours = useMemo(() => generateHourArray(extractHoursFromEvents(routines)), [routines])
 
@@ -43,6 +47,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   function removeOptionsOnMouseOut() {
     mouseOutTimer.current = setTimeout(() => setMouseHoverId(undefined), 500)
   }
+
   const [moveDataCellId, setMoveDataCellId] = useState<string | undefined>(undefined)
   const eventDataCellContainerRef = useRef<HTMLElement>(null)
 
@@ -50,9 +55,42 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
     setMoveDataCellId(id)
   }
 
+  function handleMoveByKeyPress(event: /* KeyboardEvent<HTMLElement> | */ globalThis.KeyboardEvent) {
+    if (!moveDataCellId) return
+    event.preventDefault()
+    moveEventByKey(event.code, event.shiftKey, moveDataCellId)
+  }
+
+  //console.log(moveDataCellId)
+
   useEffect(() => {
     if (moveDataCellId) {
-      startDragMove(eventDataCellContainerRef.current as HTMLElement)
+      document.onkeydown = handleMoveByKeyPress
+      /* const draggedOccurrence = routines.flatMap((routine) => routine.occurrence).find((occurrence) => occurrence.id === moveDataCellId)
+      if (!draggedOccurrence) return
+
+      const onMouseDragEnd: DragEventFunction = (top, left, avaliableDimension) => {
+        console.log("finalizou!")
+      }
+
+      const elementsAvailable = getAvailableSpaces({
+        daysOnTable, 
+        dayWidth: widthOfEachCell, 
+        draggedOccurrence,
+        startDayHour: arrayOfHours[0],
+        endDayHour: arrayOfHours[arrayOfHours.length - 1],
+        heightOfHalfHour,
+        routines
+      })
+      startDragMove(
+        eventDataCellContainerRef.current as HTMLElement,
+        draggedOccurrence,
+        elementsAvailable,
+        onMouseDragEnd,
+        true
+      )*/
+    } else {
+      document.onkeydown = null
     }
   }, [moveDataCellId])
 
@@ -63,9 +101,15 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
         left={widthOfColHeader} 
         width={width - widthOfColHeader}
         >
-        {arrayWeekDays.map(day => <RowHeaderData key={day} width={widthOfEachCell}>{translateToPortugueseWeekDays[day]}</RowHeaderData>)}
+        {
+          arrayWeekDays.map(day => 
+            <RowHeaderData key={day} width={widthOfEachCell}>
+              {translateToPortugueseWeekDays[day]}
+            </RowHeaderData>
+          )
+        }
       </TableRowHeader>
-      <TableColHeader 
+      <TableColHeader
         heigth={heigth - heightOfRowHeader} 
         top={heightOfRowHeader} 
         width={widthOfColHeader} 
@@ -91,7 +135,7 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
           return (
             <>
               <TableDivisionLine
-                key={hour + "_00" + "line"}
+                key={hour + "_00" + i}
                 top={heightOfHalfHour * (i)}
                 width={width - widthOfColHeader}
               />
@@ -102,43 +146,24 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
           <TableColDataContainer id={dayTag} key={dayTag+i} width={widthOfEachCell}>
             {/* Eventos */}
             {transformEventsToArray(routines).filter(({day})=> day === dayTag).map(({eventId, id, title, endHour, startHour, color}) => {
-              const {hour: startH, minute: startM} = parseHourMinute(startHour)
-              const {hour: endH, minute: endM} = parseHourMinute(endHour)
-              const {hour: firstArrayH, minute: firstArrayM} = parseHourMinute(arrayOfHours[0])
-              let qntOfHalfHour = (endH - startH) * 2
               
-              if(startM === 30) qntOfHalfHour -= 1
-              if(endM === 30) qntOfHalfHour += 1
-
-              const heightOfEvent = qntOfHalfHour * heightOfHalfHour
-
-              let heightTopStartEvent = (startH - firstArrayH) * 2
-
-              if(firstArrayM === 0 && startM === 30) {
-                heightTopStartEvent++
-              }
-
-              if(firstArrayM === 30 && startM === 0) {
-                heightTopStartEvent--
-              }
-              
-              const topStart = heightTopStartEvent * heightOfHalfHour
+              const {heightOfEvent, topStart} = calculeEventDimensions({startHour, endHour, heightOfHalfHour, firstOfhours: arrayOfHours[0]})
               
               return (
                 <TableEventDataCellContainer
-                  {...(moveDataCellId === id && {ref:eventDataCellContainerRef})}
-                  key={id}
+                  {...(moveDataCellId === id && {ref:eventDataCellContainerRef/* , onKeyDown:handleMoveByKeyPress */})}
+                  key={id+eventId+dayTag}
                   id={id}
                   height={heightOfEvent}
                   top={topStart}
                   style={{backgroundColor: color}}
-                  onMouseEnter={() => addOptionsOnMouseIn(id)}
-                  onMouseLeave={removeOptionsOnMouseOut}
+                  {...(!moveDataCellId && {onMouseEnter:() => addOptionsOnMouseIn(id),      onMouseLeave:removeOptionsOnMouseOut})}
                 >
                   <TableEventDataCell>
                     <div>
                       <h3>{`${title}`}</h3>
                       <p>{`${startHour} - ${endHour}`}</p>
+                      <p>{id}</p>
                     </div>
                   </TableEventDataCell>
                   {mouseHoverId === id && 

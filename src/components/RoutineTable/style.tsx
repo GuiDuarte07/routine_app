@@ -98,7 +98,7 @@ export const TableColDataContainer = styled.div<{width: number}>`
  /*  border: 1px solid black; */
 `
 
-export const TableEventDataCellContainer = styled.div<{height: number} & ITop>`
+export const TableEventDataCellContainer = styled.section<{height: number} & ITop>`
   width: 95%;
   height: calc(${(props) => props.height}px + 1px);
   top: calc(${(props) => props.top}px - 1px);

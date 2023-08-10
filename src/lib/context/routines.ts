@@ -1,7 +1,8 @@
-import { IEvent } from "@/types/Events"
+import { EnumAbbreviationDays, IEvent, IEventOccurrence } from "@/types/Events"
 import { ErrorRoutine } from "@/utils/error"
 import example from "@/utils/example.json"
-import { newEventHasTimeConflict } from "@/utils/routine"
+import { findConflictWithOccurrence, formatHourMinute, newEventHasTimeConflict, parseHourMinute, performTimeOperation, resolveTimeConflict, routineHasOccurrenceConflict } from "@/utils/routine"
+import { arrayWeekDays } from "@/utils/weakDays"
 import { create } from 'zustand'
 
 interface RoutineStates {
@@ -16,12 +17,13 @@ interface RoutineActions {
   editEvent: (event: IEvent) => void
   changeEditEventDialog: (option: number | undefined) => void
   deleteOccurrence: (occId: string) => void
+  moveEventByKey: (arrowCode: string, shift: boolean, occurrenceId: string) => void
 }
 
 
 export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => ({
   routine: example as IEvent[], // Assuming example is an initial array of events
-  daysOnTable: 5,
+  daysOnTable: 7,
   activeEditEvent: undefined,
   addNewEvent: (event) => {
     if (newEventHasTimeConflict(event, get().routine)) {
@@ -61,4 +63,77 @@ export const useRoutine = create<RoutineStates & RoutineActions>((set, get) => (
       return { routine: updatedRoutine }
     })
   },
+  moveEventByKey: (arrowCode, shift, occurrenceId) => {
+    set((state) => {
+      let routine = structuredClone(state.routine)
+      const newEvent = routine.find(event => event.occurrence.find(occ => occ.id === occurrenceId))
+      if (!newEvent) throw ErrorRoutine("NOTFOUND", "Id dessa ocorrência não foi encontrado")
+      const occurence = newEvent?.occurrence.find(occ => occ.id === occurrenceId)
+      if (!occurence) throw ErrorRoutine("NOTFOUND", "Id dessa ocorrência não foi encontrado")
+      
+      //Função para mover um evento 30 ou 60 minutos pra cima ou pra baixo
+      const moveOccurrenceByMinutes = (minutes: 30 | 60, operation: "+" | "-") => {        
+        const startHour = performTimeOperation(occurence.startHour, minutes, operation, true)
+        const endHour = performTimeOperation(occurence.endHour, minutes, operation, true)
+
+        if (endHour !== occurence.endHour && startHour !== occurence.startHour) {
+          occurence.startHour = startHour
+          occurence.endHour = endHour
+        }
+      }
+
+      //Função para mover um evento de dia
+      const moveToNextWeekDay = (procediment: 'prev' | 'next') => {
+        const actWeekDay = occurence.day
+        const dayPosition = arrayWeekDays.findIndex((day) => day === actWeekDay)
+
+        if (procediment === 'next') {
+          if (dayPosition < 6) {
+            occurence.day = arrayWeekDays[dayPosition+1]
+          }
+        } else {
+          if (dayPosition > 0) {
+            occurence.day = arrayWeekDays[dayPosition-1]
+          }
+        }
+      }
+
+      let direction: "future" | "past"
+      switch (arrowCode) {
+        case 'ArrowDown':
+          direction = "future"
+          shift ? moveOccurrenceByMinutes(60, '+') : moveOccurrenceByMinutes(30, '+')
+          break
+        case 'ArrowUp':
+            direction = "past"
+            shift ? moveOccurrenceByMinutes(60, '-') : moveOccurrenceByMinutes(30, '-')
+          break
+        case 'ArrowLeft': 
+          direction = "future"
+          moveToNextWeekDay('prev')
+          break
+        case 'ArrowRight':
+          direction = "future"
+          moveToNextWeekDay("next")
+          break
+        default:
+          return { state }
+      }
+
+      const conflitedOccId = findConflictWithOccurrence(occurence.id, routine)
+      if (conflitedOccId) {
+        const {resolved, events} = resolveTimeConflict(occurence.id, routine, direction, shift ? 60 : 30)
+        if (resolved) {
+          routine = events
+          console.log(occurence.startHour, occurence.endHour)
+        } else {
+          return { state }
+        }
+      }
+
+      return {
+        routine: routine
+      }
+    })
+  }
 }))

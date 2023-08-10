@@ -24,6 +24,7 @@ const GlobalStyles = createGlobalStyle`
     transition: all 0.50s linear;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
     /* font-family: 'Arial', sans-serif;
     background-color: #121213; */
     /* Add other global styles as needed */
@@ -45,6 +46,6 @@ const GlobalStyles = createGlobalStyle`
 }
 
   /* Add more global styles if necessary */
-`;
+`
 
-export default GlobalStyles;
+export default GlobalStyles

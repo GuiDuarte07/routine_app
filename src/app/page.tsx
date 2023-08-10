@@ -26,7 +26,7 @@ export default function Home() {
       {isModalOpen && <CreateEvent isOpen={isModalOpen} onClose={closeModal}/>}
       {activeEditEvent && <EditEventModal idEvent={activeEditEvent} isOpen={true} onClose={() => changeEditEventDialog(undefined)} />}
       <main style={{margin: "100px 0", display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-          <RoutineTable width={1100} heigth={1200}/>
+          <RoutineTable width={1400} heigth={1400}/>
           <PlusButton onClick={() => openModal()}><Image src={PlusIcon} alt="Novo Evento" width={30} height={30} /></PlusButton>
       </main>
       </>

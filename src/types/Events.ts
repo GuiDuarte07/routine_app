@@ -46,3 +46,4 @@ export interface IEvent {
 
 export type ErrorTypesRoutine =
 | "CONFLICT"
+| "NOTFOUND"

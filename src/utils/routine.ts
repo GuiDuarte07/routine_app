@@ -168,8 +168,158 @@ export function hasOccurrenceConflict(newHour: IHourEvent | IHourEventTranslated
   return false
 }
 
+// Função para somar ou remover minutes de um horário
+export function performTimeOperation(hour: string, minute: number, operation: "+" | "-", cancelOperationOnAfterMidNight: boolean): string {
+  const { hour: parsedHour, minute: parsedMinute } = parseHourMinute(hour)
+  let resultHour = parsedHour
+  let resultMinute = parsedMinute
 
+  if (operation === "+") {
+    const totalMinutes = parsedHour * 60 + parsedMinute + minute
+    if (cancelOperationOnAfterMidNight && totalMinutes >= 1440) {
+      return hour
+    }
+    resultHour = Math.floor(totalMinutes / 60) % 24
+    resultMinute = totalMinutes % 60
+  } else if (operation === "-") {
+    let totalMinutes = parsedHour * 60 + parsedMinute - minute
+    if (totalMinutes < 0) {
+      totalMinutes = 24 * 60 + totalMinutes
+      if (cancelOperationOnAfterMidNight) {
+        return hour
+      }
+    }
+    resultHour = Math.floor(totalMinutes / 60) % 24
+    resultMinute = totalMinutes % 60
+  }
 
+  return formatHourMinute(resultHour, resultMinute)
+}
 
+export function routineHasOccurrenceConflict(events: IEvent[]): boolean {
+  for (let i = 0; i < events.length; i++) {
+    for (let j = i + 1; j < events.length; j++) {
+      for (const occurrenceI of events[i].occurrence) {
+        for (const occurrenceJ of events[j].occurrence) {
+          if (occurrenceI.day === occurrenceJ.day) {
+            const startTimeI = new Date(`1970-01-01T${occurrenceI.startHour}`)
+            const endTimeI = new Date(`1970-01-01T${occurrenceI.endHour}`)
+            const startTimeJ = new Date(`1970-01-01T${occurrenceJ.startHour}`)
+            const endTimeJ = new Date(`1970-01-01T${occurrenceJ.endHour}`)
 
+            if ((startTimeI < endTimeJ && startTimeJ < endTimeI) || (startTimeJ < endTimeI && startTimeI < endTimeJ)) {
+              return true // Conflito encontrado
+            }
+          }
+        }
+      }
+    }
+  }
+  return false // Nenhum conflito encontrado
+}
 
+export function findConflictWithOccurrence(occurrenceId: string, events: IEvent[]): string | undefined {
+  const eventWithOccurrence = events.find(event => event.occurrence.some(occurrence => occurrence.id === occurrenceId))
+
+  if (!eventWithOccurrence) {
+    return undefined // Ocorrência não encontrada em nenhum evento
+  }
+
+  const occurrenceToCheck = eventWithOccurrence.occurrence.find(occurrence => occurrence.id === occurrenceId)
+
+  if (!occurrenceToCheck) {
+    return undefined // Ocorrência não encontrada
+  }
+
+  const startDateTime = new Date(`1970-01-01T${occurrenceToCheck.startHour}`)
+  const endDateTime = new Date(`1970-01-01T${occurrenceToCheck.endHour}`)
+
+  for (const event of events) {
+    for (const occurrence of event.occurrence) {
+      if (occurrence.id !== occurrenceId && occurrence.day === occurrenceToCheck.day) {
+        const occurrenceStartDateTime = new Date(`1970-01-01T${occurrence.startHour}`)
+        const occurrenceEndDateTime = new Date(`1970-01-01T${occurrence.endHour}`)
+
+        if ((startDateTime < occurrenceEndDateTime && occurrenceStartDateTime < endDateTime) ||
+            (occurrenceStartDateTime < endDateTime && startDateTime < occurrenceEndDateTime)) {
+          return occurrence.id
+        }
+      }
+    }
+  }
+  return undefined // Nenhuma ocorrência em conflito encontrada
+}
+
+export function resolveTimeConflict(
+  occurrenceId: string,
+  events: IEvent[],
+  direction: "past" | "future",
+  passInMinutes: number
+): { resolved: boolean, events: IEvent[] } {
+  const updatedEvents = [...events]
+
+  //Resgatando o evento da ocorrência que irá ser alterada
+  const eventToUpdateIndex = updatedEvents.findIndex(event => event.occurrence.some(occurrence => occurrence.id === occurrenceId))
+  if (eventToUpdateIndex === -1) {
+    return { resolved: false, events: updatedEvents }
+  }
+
+  // Resgatando o evento em si que será alterado
+  const eventToUpdate = updatedEvents[eventToUpdateIndex]
+  const occurrenceUpdateIndex = eventToUpdate.occurrence.findIndex(occurrence => occurrence.id === occurrenceId)
+  if (occurrenceUpdateIndex === -1) {
+    return { resolved: false, events: updatedEvents }
+  }
+  const occurrenceToResolve = eventToUpdate.occurrence[occurrenceUpdateIndex]
+
+  const startDateTime = new Date(`1970-01-01T${occurrenceToResolve.startHour}`)
+  const endDateTime = new Date(`1970-01-01T${occurrenceToResolve.endHour}`)
+
+  const endDateToCompare = new Date(`1970-01-01T${occurrenceToResolve.endHour}`)
+
+  let resolved = false
+
+  // Attempt to resolve conflict based on direction
+  while (!resolved) {
+    if (direction === "past") {
+      startDateTime.setMinutes(startDateTime.getMinutes() - passInMinutes)
+      endDateTime.setMinutes(endDateTime.getMinutes() - passInMinutes)
+    } else if (direction === "future") {
+      startDateTime.setMinutes(startDateTime.getMinutes() + passInMinutes)
+      endDateTime.setMinutes(endDateTime.getMinutes() + passInMinutes)
+    }
+
+    if (endDateTime.getDay() !== endDateToCompare.getDay()) {
+      return { resolved: false, events }
+    }
+
+    // Checando se ainda há conflito
+    const hasConflict = updatedEvents.some(event => {
+      return event.occurrence.some(occurrence => {
+        if (occurrence.id !== occurrenceId && occurrence.day === occurrenceToResolve.day) {
+          const occurrenceStartDateTime = new Date(`1970-01-01T${occurrence.startHour}`)
+          const occurrenceEndDateTime = new Date(`1970-01-01T${occurrence.endHour}`)
+
+          console.log(occurrence.id)
+          console.log(startDateTime.toTimeString().substring(0, 5), endDateTime.toTimeString().substring(0, 5))
+          console.log(occurrenceStartDateTime.toTimeString().substring(0, 5), occurrenceEndDateTime.toTimeString().substring(0, 5))
+
+          if ((startDateTime < occurrenceEndDateTime && occurrenceStartDateTime < endDateTime) ||
+              (occurrenceStartDateTime < endDateTime && startDateTime < occurrenceEndDateTime)) {
+            return true
+          }
+        }
+        return false
+      })
+    })
+
+    if (!hasConflict) {
+      // .substring(0, 5) irá retornar apenas a hora e minuto to .toTimeString()
+      occurrenceToResolve.startHour = startDateTime.toTimeString().substring(0, 5)
+      occurrenceToResolve.endHour = endDateTime.toTimeString().substring(0, 5)
+      resolved = true
+    }
+  }
+
+  return { resolved, events: updatedEvents }
+}
