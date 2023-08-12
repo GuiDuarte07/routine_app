@@ -3,14 +3,16 @@ import { useRoutine } from "@/lib/context/routines"
 import { extractHoursFromEvents, generateHourArray, transformEventsToArray } from "@/utils/routine"
 import { ColHeaderData, RowHeaderData, TableColDataContainer, TableColHeader, TableContainer, TableDataContainer, TableDivisionLine, TableEventDataCell, TableEventDataCellContainer, TableEventMoreOptions, TableRowHeader } from "./style"
 import { translateToPortugueseWeekDays, arrayWeekDays } from "@/utils/weakDays"
-import { useMemo, useState, useRef, useEffect, KeyboardEvent } from "react"
+import { useMemo, useState, useRef, useEffect, KeyboardEvent, useCallback } from "react"
 
-import {BiEdit, BiMove} from "react-icons/bi"
+import {BiEdit, BiMove, BiCheck} from "react-icons/bi"
 import {AiOutlineDelete} from "react-icons/ai"
+import {MdDragIndicator} from "react-icons/md"
 import { DragEventFunction, startDragMove } from "@/utils/DragEvent"
 import { calculeEventDimensions } from "@/utils/createTable"
 import { calculateHeightBetweenHours, dayOfWeekBasedOnLeft, getAvailableSpaces } from "@/utils/eventSize"
 import { EnumAbbreviationDays, IEventOccurrence } from "@/types/Events"
+import { useMoveByArrow } from "@/hooks/RoutineTable/moveByArrow"
 
 interface IRoutineTable {
   width: number
@@ -22,7 +24,6 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
   const daysOnTable = useRoutine((state) => state.daysOnTable)
   const deleteOccurrence = useRoutine((state) => state.deleteOccurrence)
   const changeEditEventDialog = useRoutine((state) => state.changeEditEventDialog)
-  const moveEventByKey = useRoutine(state => state.moveEventByKey)
 
   const arrayOfHours = useMemo(() => generateHourArray(extractHoursFromEvents(routines)), [routines])
 
@@ -48,51 +49,10 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
     mouseOutTimer.current = setTimeout(() => setMouseHoverId(undefined), 500)
   }
 
-  const [moveDataCellId, setMoveDataCellId] = useState<string | undefined>(undefined)
   const eventDataCellContainerRef = useRef<HTMLElement>(null)
 
-  function startMoveOccurrence(id: string) {
-    setMoveDataCellId(id)
-  }
-
-  function handleMoveByKeyPress(event: /* KeyboardEvent<HTMLElement> | */ globalThis.KeyboardEvent) {
-    if (!moveDataCellId) return
-    event.preventDefault()
-    moveEventByKey(event.code, event.shiftKey, moveDataCellId)
-  }
-
-  //console.log(moveDataCellId)
-
-  useEffect(() => {
-    if (moveDataCellId) {
-      document.onkeydown = handleMoveByKeyPress
-      /* const draggedOccurrence = routines.flatMap((routine) => routine.occurrence).find((occurrence) => occurrence.id === moveDataCellId)
-      if (!draggedOccurrence) return
-
-      const onMouseDragEnd: DragEventFunction = (top, left, avaliableDimension) => {
-        console.log("finalizou!")
-      }
-
-      const elementsAvailable = getAvailableSpaces({
-        daysOnTable, 
-        dayWidth: widthOfEachCell, 
-        draggedOccurrence,
-        startDayHour: arrayOfHours[0],
-        endDayHour: arrayOfHours[arrayOfHours.length - 1],
-        heightOfHalfHour,
-        routines
-      })
-      startDragMove(
-        eventDataCellContainerRef.current as HTMLElement,
-        draggedOccurrence,
-        elementsAvailable,
-        onMouseDragEnd,
-        true
-      )*/
-    } else {
-      document.onkeydown = null
-    }
-  }, [moveDataCellId])
+  const { moveByArrowDataCellId, confirmMoveByArrowPress, startMoveByArrowOccurrence } = useMoveByArrow()
+  
 
   return (
     <TableContainer width={width} heigth={heigth}>
@@ -151,13 +111,13 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
               
               return (
                 <TableEventDataCellContainer
-                  {...(moveDataCellId === id && {ref:eventDataCellContainerRef/* , onKeyDown:handleMoveByKeyPress */})}
+                  {...(moveByArrowDataCellId === id && {ref:eventDataCellContainerRef})}
                   key={id+eventId+dayTag}
                   id={id}
                   height={heightOfEvent}
                   top={topStart}
                   style={{backgroundColor: color}}
-                  {...(!moveDataCellId && {onMouseEnter:() => addOptionsOnMouseIn(id),      onMouseLeave:removeOptionsOnMouseOut})}
+                  {...(!moveByArrowDataCellId && {onMouseEnter:() => addOptionsOnMouseIn(id),      onMouseLeave:removeOptionsOnMouseOut})}
                 >
                   <TableEventDataCell>
                     <div>
@@ -166,18 +126,29 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
                       <p>{id}</p>
                     </div>
                   </TableEventDataCell>
-                  {mouseHoverId === id && 
+                  {mouseHoverId === id && moveByArrowDataCellId === undefined &&
                     <TableEventMoreOptions className="flex flex-col items-center justify-start">
                         <button onClick={() => changeEditEventDialog(eventId)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <BiEdit aria-label="Editar"/>
                         </button>
-                        <button onClick={() => startMoveOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                        <button onClick={() => (id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
+                          <MdDragIndicator/>
+                        </button>
+                        <button onClick={() => startMoveByArrowOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <BiMove/>
                         </button>
                         <button onClick={() => deleteOccurrence(id)} type="button" className="flex items-center justify-center py-2 w-full hover:bg-blue-600">
                           <AiOutlineDelete/>
                         </button>
                     </TableEventMoreOptions>
+                  }
+
+                  {mouseHoverId === id && moveByArrowDataCellId === id &&
+                    <div className="flex flex-col items-center justify-start bg-green-700 absolute top-0 right-[-45px] w-[40px] z-[99999]">
+                      <button onClick={() => confirmMoveByArrowPress()} type="button" className="flex items-center justify-center w-full py-2 hover:bg-green-800">
+                          <BiCheck size={"24px"}/>
+                      </button>
+                    </div>
                   }
                 </TableEventDataCellContainer>
               )
@@ -188,3 +159,27 @@ export const RoutineTable = ({heigth, width}: IRoutineTable) => {
     </TableContainer>
   )
 }
+
+/* const draggedOccurrence = routines.flatMap((routine) => routine.occurrence).find((occurrence) => occurrence.id === moveByArrowDataCellId)
+      if (!draggedOccurrence) return
+
+      const onMouseDragEnd: DragEventFunction = (top, left, avaliableDimension) => {
+        console.log("finalizou!")
+      }
+
+      const elementsAvailable = getAvailableSpaces({
+        daysOnTable, 
+        dayWidth: widthOfEachCell, 
+        draggedOccurrence,
+        startDayHour: arrayOfHours[0],
+        endDayHour: arrayOfHours[arrayOfHours.length - 1],
+        heightOfHalfHour,
+        routines
+      })
+      startDragMove(
+        eventDataCellContainerRef.current as HTMLElement,
+        draggedOccurrence,
+        elementsAvailable,
+        onMouseDragEnd,
+        true
+      )*/
