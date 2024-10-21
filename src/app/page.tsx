@@ -1,34 +1,53 @@
-'use client'
+"use client"
+
+import { Button } from "@/components/ui/button"
+
+import { Calendar, Settings, PlusCircle, User, LogOut } from "lucide-react"
 import { RoutineTable } from "@/components/RoutineTable"
-import "@/utils/routine"
-import { PlusButton } from "./style"
-import PlusIcon from "../../public/icons/plus-svgrepo-com.svg"
-import Image from "next/image"
-import { useState } from "react"
-import { CreateEvent } from "@/components/EventDialog/CreateEvent"
-import { useRoutine } from "@/lib/context/routines"
-import { EditEventModal } from "@/components/EventDialog/EditEvent"
+import { AddEventForm } from "@/components/AddEventForm"
 
-export default function Home() {
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const activeEditEvent = useRoutine(state => state.activeEditEvent)
-  const changeEditEventDialog = useRoutine(state => state.changeEditEventDialog)
-
-  const openModal = () => {
-    setIsModalOpen(true)
-  }
-
-  const closeModal = () => {
-    setIsModalOpen(false)
-  }
+export default function WeekPlanner() {
   return (
-      <>
-      {isModalOpen && <CreateEvent isOpen={isModalOpen} onClose={closeModal}/>}
-      {activeEditEvent && <EditEventModal idEvent={activeEditEvent} isOpen={true} onClose={() => changeEditEventDialog(undefined)} />}
-      <main style={{margin: "100px 0", display: "flex", alignItems: "center", justifyContent: "center", height: "100%"}}>
-          <RoutineTable width={1400} heigth={1400}/>
-          <PlusButton onClick={() => openModal()}><Image src={PlusIcon} alt="Novo Evento" width={30} height={30} /></PlusButton>
+    <div className="flex h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-md">
+        <div className="p-4">
+          <h1 className="text-2xl font-bold mb-4">Weekly Planning</h1>
+          <nav className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start">
+              <Calendar className="mr-2 h-4 w-4" />
+              Calendário
+            </Button>
+            <Button variant="ghost" className="w-full justify-start">
+              <Settings className="mr-2 h-4 w-4" />
+              Configurações
+            </Button>
+            <Button variant="ghost" className="w-full justify-start">
+              <User className="mr-2 h-4 w-4" />
+              Perfil
+            </Button>
+          </nav>
+        </div>
+        <div className="absolute bottom-4 left-4">
+          <Button variant="ghost" className="text-red-500">
+            <LogOut className="mr-2 h-4 w-4" />
+            Sair
+          </Button>
+        </div>
+      </aside>
+
+      {/* Conteúdo Principal */}
+      <main className="flex-1 p-8">
+        <h2 className="text-3xl font-bold mb-6">Planejamento Semanal</h2>
+
+        {/* Formulário para adicionar compromisso */}
+        <AddEventForm></AddEventForm>
+
+        {/* Calendário Semanal */}
+        <div className="bg-white p-4 rounded-lg shadow overflow-x-auto w-full h-full">
+          <RoutineTable></RoutineTable>
+        </div>
       </main>
-      </>
+    </div>
   )
 }

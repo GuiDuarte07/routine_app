@@ -5,13 +5,13 @@
     "color": "blue",
     "occurrence": [
       {
-        "id": "occ1",
+        "id": "aa188e2f-8e19-4b65-8e22-cf5de5dc72ea",
         "day": "mon",
         "startHour": "07:30",
         "endHour": "10:00"
       },
       {
-        "id": "occ2",
+        "id": "dc383982-42be-40de-bdc7-fa1d1340f759",
         "day": "mon",
         "startHour": "14:00",
         "endHour": "19:00"
@@ -24,13 +24,13 @@
     "color": "green",
     "occurrence": [
       {
-        "id": "occ3",
+        "id": "c04a226d-4012-4b28-a04a-27007149c10f",
         "day": "tues",
         "startHour": "10:30",
         "endHour": "15:00"
       },
       {
-        "id": "occ4",
+        "id": "757ec751-145f-4088-b939-e3bca1a1d2d7",
         "day": "tues",
         "startHour": "06:30",
         "endHour": "10:00"
@@ -43,19 +43,19 @@
     "color": "red",
     "occurrence": [
       {
-        "id": "occ5",
+        "id": "55d26c8b-b277-472c-90db-e36b21059ce0",
         "day": "fri",
         "startHour": "16:00",
         "endHour": "18:30"
       },
       {
-        "id": "occ6",
+        "id": "7cf6b402-3f27-41af-8c25-f4d8dae4991b",
         "day": "fri",
         "startHour": "08:00",
         "endHour": "10:30"
       },
       {
-        "id": "occ7",
+        "id": "f23482f4-2f35-4c50-9e19-77b91aae3779",
         "day": "wed",
         "startHour": "07:00",
         "endHour": "07:30"
@@ -68,19 +68,19 @@
     "color": "purple",
     "occurrence": [
       {
-        "id": "occ8",
+        "id": "1275c2f4-e9ff-439a-9168-adcc996872ec",
         "day": "wed",
         "startHour": "11:00",
         "endHour": "14:30"
       },
       {
-        "id": "occ9",
+        "id": "45938bc1-429c-4636-a278-2f1108cbaf5f",
         "day": "wed",
         "startHour": "18:00",
         "endHour": "19:00"
       },
       {
-        "id": "occ10",
+        "id": "97e770e4-7874-4588-a48a-c6c2065adcf4",
         "day": "thurs",
         "startHour": "10:30",
         "endHour": "18:30"

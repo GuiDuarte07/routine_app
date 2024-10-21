@@ -1,3 +1,4 @@
+'use client'
 import useDarkModeStore from '@/lib/context/theme'
 import StyledComponentsRegistry from '@/lib/registry'
 import GlobalStyles, { darkTheme, lightTheme } from '@/style/GlobalStyle'
